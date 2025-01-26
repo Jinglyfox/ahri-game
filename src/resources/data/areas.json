@@ -1,0 +1,149 @@
+{
+    "inntown": {
+        "inn_entrance": {
+            "id": "inn_entrance",
+            "type": "overworld",
+            "timeCost": [1, "hour"],
+            "description": "You stand in the heart of the little community that has formed around the crossroads. To your north you see your inn, a beaten up but sturdy building with two floors. You can see where master bedroom is, a small projection from the main building on the first floor. You know it's probably not empty at this time of day; Akiyo takes a while to get herself ready in the morning. Something to do with 'all these stupid tails needing grooming,' last you checked.<p>To your south, you see the little building that houses Hakkin's general store. You're always struck by how it seems way bigger on the inisde. At this time of day, there's a good amount of business from people either stocking up on small things like rations for the road or supplies to repair broken wheels.",
+            "injectors": [],
+            "characters" : [],
+            "buttons": [
+                {
+                    "id": 0,
+                    "name": "Enter Inn",
+                    "target": ["playerinn", "inn_entrance"],
+                    "type": "free"
+                },
+                {
+                    "id": 10,
+                    "name": "West",
+                    "target": "inntown_cell_3",
+                    "type": "free"
+                },
+                {
+                    "id": 11,
+                    "name": "South",
+                    "target": "general_store",
+                    "type": "free",
+                    "timeAvailable": [6, 20]
+                },
+                {
+                    "id": 12,
+                    "name": "East",
+                    "target": "inntown_crossroad",
+                    "type": "free"
+                }
+            ]
+        },
+        "inntown_cell_1": {
+            "id": "inntown_cell_1",
+            "type": "overworld",
+            "description": "The road away from your inn continues north from here, although the path gets significantly more dangerous. Monsters tend to stay away from civilization, even if it's just the one inn, and the forest ahead is dark and the plains cold.",
+            "injectors": [],
+            "characters" : [],
+            "buttons": [
+                {
+                    "id": 11,
+                    "name": "South",
+                    "target": "inntown_cell_2",
+                    "type": "free"
+                }
+            ]
+        },
+        "inntown_cell_2": {
+            "id": "inntown_cell_2",
+            "type": "overworld",
+            "description": "The road bends here, curving north towards the frostlands. It will split another few times but none of the roads end up being quite as busy as this one. This is the only place where the path between all three capitals meet.",
+            "injectors": [],
+            "characters" : [],
+            "buttons": [
+                {
+                    "id": 6,
+                    "name": "North",
+                    "target": "inntown_cell_1",
+                    "type": "free"
+                },
+                {
+                    "id": 12,
+                    "name": "East",
+                    "target": "inntown_cell_3",
+                    "type": "free"
+                }
+            ]
+        },
+        "inntown_cell_3": {
+            "id": "inntown_cell_3",
+            "type": "overworld",
+            "description": "The road to the west of your inn is well travelled and, at this time of day, not too congested. The road is extremely packed down with no vegetation growing on it because of the thousands of travelers it sees every year. The trees lining the road still give it a cozy feeling, although there are fewer here, closer to the inn.",
+            "injectors": [],
+            "characters" : [],
+            "buttons": [
+                {
+                    "id": 10,
+                    "name": "West",
+                    "target": "inntown_cell_2",
+                    "type": "free"
+                },
+                {
+                    "id": 12,
+                    "name": "East",
+                    "target": "inn_entrance",
+                    "type": "free"
+                }
+            ]
+        },
+        "inntown_crossroad": {
+            "id": "inntown_crossroad",
+            "type": "overworld",
+            "description": "You're standing at the crossroads near your inn. This is where three major arterial roads meet up so you see plenty of foot traffic through the area, and plenty of business. <p>There's a gentle breeze today which softly rustles the branches of the trees around you. It's a nice place to sit and watch the various travellers go by, some travelling on foot and some by cart. It's humbling to think about how each one of the hundreds of people that pass your inn every day have their own lives and stories and by sheer chance theirs overlaps with your own, even for a small fraction of time.</p>",
+            "injectors": [],
+            "characters" : [],
+            "buttons": [
+                {
+                    "id": 10,
+                    "name": "West",
+                    "target": "inn_entrance",
+                    "type": "free"
+                }
+            ]
+        },
+        "general_store": {
+            "id": "general_store",
+            "type": "overworld",
+            "description": "Inside the store, you can now plainly see the shelves and racks proudly displaying the sundry goods Hakkin has on offer. Everything you might need is here, from various spices and fresh produce to a small variety of differently sized nails. As Hakkin is fond of saying, 'Everything's for sale here and everything here's for sale!' Lately she's taken to adding on, 'Except for me, of course. You'll have to go across the street for that.' with a wink. It's nice that she's advertising for you, you guess.",
+            "injectors": [],
+            "characters" : [],
+            "buttons": [
+                {
+                    "id": 6,
+                    "name": "North",
+                    "target": "inn_entrance",
+                    "type": "free"
+                }
+            ]
+        }
+    },
+    "playerinn": {
+        "inn_entrance": {
+            "id": "inn_entrance",
+            "type": "overworld",
+            "description": "You're standing in the front entrance of your inn. Several people are sitting at the tables around the room, eating their breakfasts and  chatting with other travellers.",
+            "injectors": [],
+            "characters" : [],
+            "buttons": [
+                {
+                    "id": 0,
+                    "name": "Exit Inn",
+                    "target": ["inntown", "inn_entrance"],
+                    "type": "free"
+                },
+                {
+                    "id": 1,
+                    "name": "Go To Sleep",
+                    "timeCost": [1, "day"],
+                    "type": "free"
+                }
+            ]
+        }
+    }
+}

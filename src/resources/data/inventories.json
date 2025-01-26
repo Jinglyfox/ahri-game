@@ -1,0 +1,34 @@
+{
+    "testinventoryone": {
+        "froggius": {
+            "quantityForSale": 1,
+            "flags": ["unique", "norestock"]
+        }, 
+        "iron": {
+            "quantityForSale": 10
+        },
+        "nipple armor": {
+            "quantityForSale": -1
+        }, 
+        "woodbow": {
+            "quantityForSale": -1
+        }, 
+        "ironbow": {
+            "quantityForSale": -1
+        },
+        "ironsword": {
+            "quantityForSale": 6
+        }
+    },
+    "testinventorytwo": {
+        "ironsword": {
+            "quantityForSale": 7
+        },
+        "ironbow": {
+            "quantityForSale": 10
+        },
+        "medHealPot": {
+            "quantityForSale": -1
+        }
+    }
+}

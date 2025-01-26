@@ -1,0 +1,175 @@
+{
+    "akiyo": {
+        "name" : "Akiyo",
+        "id": "akiyo",
+        "blurbs": {
+            "playerinn": {
+                "inn_entrance": {
+                    "description": "<p>Akiyo is standing behind the front counter, idly reading a book and dealing with customers whenever they come up. She looks at you when you come in and gives you a smile and wave before returning to her reading.</p>",
+                    "button": {
+                        "id": -1,
+                        "name": "Akiyo",
+                        "target": "akiyo_hello",
+                        "timeAvailable": [6, 20],
+                        "type": "free"
+                    }
+                }
+            }
+        },
+        "scenes": {
+            "playerinn": {
+                "akiyo_hello" : {
+                    "id": "akiyo_hello",
+                    "type": "free",
+                    "description": "<p>You walk up to your white-haired companion and say hello.</p> <p>'Hey, what's up?'</p>",
+                    "injectors": [],
+                    "buttons": [
+                        {
+                            "id": 0,
+                            "name": "Sex",
+                            "target": "akiyo_sextransition",
+                            "type": "free"
+                        },
+                        {
+                            "id": 14,
+                            "name": "Return",
+                            "target": "inn_entrance",
+                            "type": "free"
+                        }
+                    ]
+                },
+                "akiyo_sextransition" : {
+                    "id": "akiyo_sextransition",
+                    "type": "free",
+                    "description": "<p>You ask Akiyo if she'd be up for a quick romp in the hay. It's only because you've lived together so long that you're able to tell your question flusters her; a slight blush has crept into her cheeks and one of her ears has started twitching a little. She quickly regains her composure though. She smiles and raises an eyebrow,</p> <p><i>'Sure, just give me a minute to get someone to cover for me.'</i></p> <p> It's impressive how she hides her excitement as she confidently tells one of your employees to man the front counter while the two of you have a talk in the back. It's only as you're following her to your master bedroom that you notice the signs. She's walking much faster than normal and she can't keep her tails completely still.</p>",
+                    "injectors": [],
+                    "buttons": [
+                        {
+                            "id": 0,
+                            "name": "Next",
+                            "target": "akiyo_sexmenu",
+                            "type": "free"
+                        }
+                    ]
+                },
+                "akiyo_sexmenu" : {
+                    "id": "akiyo_sexmenu",
+                    "type": "free",
+                    "description": "When you get inside your room and get the door shut behind you, Akiyo sits on the bed and crosses her legs in front of herself. Her blush seems to have deepened a bit while the two of you were walking, and looking at her in her beautiful black and red kimono you're feeling some warmth creep into your face, too. Standing in front of her sitting form you can see deep into the cleavage of her perfect breasts and you're pretty sure that if she uncrossed her legs you'd be able to see the pretty red underwear she wears underneath her robe.<p>She raises a beautiful white eyebrow again and asks,</p> <p>'So, what did you have in mind?'</p>",
+                    "injectors": [],
+                    "returnType": "currentCell",
+                    "returnText": "",
+                    "buttons": [
+                        {
+                            "id": 0,
+                            "name": "Blowjob",
+                            "target": "akiyo_blowjob",
+                            "type": "free"
+                        }
+                    ]
+                },
+                "akiyo_blowjob" : {
+                    "id": "akiyo_blowjob",
+                    "type": "free",
+                    "description": "<p>You tell Akiyo that you were thinking of her mouth, on your dick. She smiles and pushes herself off the bed, slowly walking towards you with a sexy sway in her hips and tails mischievously swaying behind her. As she gets closer, you reach out your arms, your left hand sliding around her waist, your right under her left arm.</p><p>She narrows her gorgeous, slitted gold eyes at you and places both her hands on your chest. As you pull her closer her hands slide up your chest and over your shoulders, arms wrapping around your neck and left hand clutching the back of your head. She gently scratches the back of your head with her long, sharp nails. You give an appreciative little groan in response, your left hand finding its way to her firm, full ass and giving it an approving squeeze. She laughs and shifts her weight forward, letting you take some of her weight while her soft tits squeeze against your chest and her lips find yours. It starts out as a gentle, familiar kiss, but the two of you are horny and full of passion. Before long her tongue finds its way past your lips and you’re playfully fighting it with your own for control over your mouth. Her grip on the back of your head tightens, claws digging in slightly, and your right hand joins your left in fondling her ass. Your dick stiffens against her, pressing into her slightly. She must feel it, she starts rubbing herself against your bulge and the pressure makes you groan again into her mouth.</p><p>After a minute of this, she pulls her mouth away from yours, a thin bridge of saliva connecting the two of you, snapped when she puts her face next to yours. Her breath is hot and moist on your ear and she’s breathing pretty heavily. Her body is tense in your arms and it’s clear how nervous she is even as she tries to play the part of the sultry seductress. It’s fucking adorable how hard she’s trying and even more than that, it’s sexy as hell. Even as she makes your heart jump in your chest, you can feel your cock grow fully hard against her. One of your heads moves up from her butt to her head and starts scratching behind her ears and she gives a little squeak, her facade cracking slightly. She laughs and kisses your ear before regaining her composure.</p><p>She starts to speak, her voice a needy whisper in your ear, slightly unsteady from the ear scratches you’re giving her,</p><p><i>“I think that could be arranged…  you’d have to make sure you give me my reward when I ask you to, though.”</i> She moves her face back in front of you and gives you her best puppy fox face, her eyes wide, brow furrowed, and ears tilted back as best they can be against your hands.</p><p><i>“Promise?”</i></p><p>You don’t think you could deny her in a million years.</p><p><i>“Promise.”</i></p><p>She smiles and, tails wagging, extricates herself from your embrace. She takes one of your hands in hers and guides you to the bed. You sit on the edge of it, heart thumping excitedly in your chest as you lean back on the bed, holding yourself up with your hands.</p><p>She kneels down in front of  you, staring up at you with a big smile and wide eyes. She places her hands halfway down your calves and gently moves your legs apart. Two of her tails wrap around your legs and make sure you don’t close them - as if you ever would - as her hands slide up and she moves forward between your legs.</p><p>When her hands reach your crotch she gives a little gasp of mock surprise and squeezes your dick through your pants. Your hips give a little buck and she giggles at the pleasure she gave you. </p><p>After a moment of fiddling with your belt she gets your pants open. Your cock is so hard that your underwear is the only thing that keeps it from swinging up and hitting her in the face. She looks up at you again and wiggles her eyebrows slightly before giving your dick a little kiss through the fabric. You flex your dick as her lips meet you and she jumps a little in surprise before laughing again.</p><p><i>“God, I’ll never get used to that. I had no idea you guys could even control your dicks like that.”</i> Now it’s your turn to wiggle your eyebrows.</p><p>She rolls her eyes at you and moves her hands to the hem of your underwear. In one motion she pulls the clothing on your lower half down past your knees. Your dick springs out, fully hard at this point and beading pre. She kneels back between your knees and takes you in one hand with a little squeeze. She starts to jerk you off with smooth, practiced motions, your precum aiding in lubricating her strokes. She looks up at you, still smiling as she moves her face closer to your prick.</p><p><i>“I’ll never get used to the smell, either. It’s just so fucking hot for some reason.”</i> She flashes you a mischievous grin and surprises you with a quick little lick at a bead of precum at the tip of your crown. <i>“Same with the taste.”</i></p><p>With that she starts going to work on you with her tongue. Her hand shortens its strokes on your cock, staying near your base while she gives you little licks and kisses all up your shaft and dickhead. She stops stroking you for a second and takes your head into her mouth, swirling her tongue around the underside of it as her free hand moves from its position on your thigh and disappears between her thighs, up her kimono. You can tell from how fast her arm is moving that she’s really, really into this.</p><p>She removes your cockhead from her mouth and keeps your dick still with her other hand around its base. Even though this has just been the foreplay, you’re starting to grunt from the effort of delaying your orgasm. You’re pretty sure she could finish you off within seconds if she really wanted to. You know she knows this, probably from the way you were throbbing in her mouth, because she winks at you and says,</p><p><i>“Remember, you have to save it for when I ask!”</i></p><p>Before sliding your dick into her mouth, taking your entire cock in one go. As she slides down, she hugs the bottom of your shaft with her tongue. You give a hiss of satisfaction at finally getting her warm, wet mouth and throat around you and she smiles at you around your prick. You feel her laugh from the vibrations through your cock and you can’t help but buckle forward, taking your weight off your hands.</p><p>She starts to bob her head slowly back and forth, pausing when she reaches either the bottom or the top of your dick. When she’s at your crown, she licks at the underside of your cockhead for a few moments before sliding back down, tongue caressing your shaft until she reaches the bottom. Once she’s there, she stops again and does her best to reach down and lick your balls. She can’t quite reach, but it doesn’t matter. What she can do feels amazing and just the fact that she’s working so hard for you is beyond hot.</p><p>She starts to pick up the pace, sloppy sounds coming both from her throat and the wetness coming from her pussy as she frantically frigs herself, and you can already feel the telltale pressure building in your crotch. You start to give soft, low moans. This only serves to encourage her, her tails almost a white blur from how fast they’re wagging and the hot breath from her nostrils hitting your dick even faster from how hard she’s breathing.</p><p>Before too long you’re getting desperate, her hot mouth around your cock and experienced tongue tickling your cockhead with every increasingly frequent bob of her head feels amazing and you need something, anything to distract yourself or slow her down if you’re gonna last as long as she wants you to. Then, you realize… when you buckled forward, you freed up your hands. You know Akiyo, all foxes, really, have a massive soft spot for getting their ears played with. You abused it earlier and god damn it you’re going to abuse it again.</p><p>Your hands move forward, taking a soft, fluffy ear in each hand. You gently pinch both of them between your fingers and rub the soft, delicate skin. You pay special attention to the tips of her ears and the small flap of skin where her ears meet her head. You know from experience those are especially sensitive for her, and you are merciless in your attack.</p><p>Your efforts have immediate results. She instantly slows down and pushes up slightly into your hands, letting out an appreciative hum which vibrates again through your dick. You continue your efforts, letting go of her ears to instead gently scratch at the backs of them. She lets out another whine and pushes up even harder  as you dig  your fingers into the bases of her ears and really start to give them a good rubbing.</p><p>Even with the slower pace, with how wound up you are and the excellent use of her tongue means you still aren’t going to last much longer. You’re almost ready to burst when she finally pulls back, still looking up at you and breathing heavily.</p><p><i>“Please… don’t… stop!”</i></p><p>Knowing how close you are to release at last, you redouble your efforts on her ears. You start to gently massage the entrance to the front of her ears with your thumbs, pushing through all the white fluff inside until you reach the base, while still digging your fingers in behind her ears. Between belabored breaths, she finally pants out,</p><p><i>“Fuck… alright… I’m ready… for my treat… now!”</i></p><p>It seems like she’s just as close as you are. Not a moment too soon she slides you back into her mouth, your cockhead hitting the back of her throat. As soon as  you’re inside her mouth you finally climax. Your entire body tenses with each jet of cum and all you can do with your hands is hold on to her head, gently holding her against the base of your cock as she comes around her fingers, tails wagging erratically and eyes shutting tight.</p><p>With each rope you cum into her, you see a small bump in her throat as she swallows it all down. Once you’re both finally done and had a minute to rest, you let go of her head and she slides off your softening prick. As she slides onto the bed next to you, you notice the small puddle of femcum she left on the ground behind her. You tiredly smile at how much she seems to have enjoyed herself as you collapse back onto the sheets. Still breathing hard, she smiles at you and pushes her face into your chest.</p><p>“Thanks for playing along with me. That was fun.”</p><p>You nod your head in agreement and the two of you spend the rest of the hour idly cuddling. At the end of the hour, the two of you get cleaned up and get a change of clothes, ready to get back to your day.</p>",
+                    "injectors": [],
+                    "buttons": [
+                        {
+                            "id": 14,
+                            "name": "Return",
+                            "target": "inn_entrance",
+                            "type": "free"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "hakkin": {
+        "name" : "Hakkin",
+        "id": "hakkin",
+        "blurbs": {
+            "inntown": {
+                "general_store": {
+                        "description": "<p>As you come in, you see a short woman with platinum blonde hair and fox ears standing behind the counter. Hakkin looks up and smiles, her tail starting to slowly wag. She's clearly excited to see you, although you don't know if she's the same with all her customers.</p>",
+                        "button": {
+                        "id": -1,
+                        "name": "Hakkin",
+                        "target": "hakkin_greet",
+                        "type": "free"
+                    }
+                }
+            }
+        },
+        "scenes": {
+            "inntown":{
+                "hakkin_greet" : {
+                    "id": "hakkin_greet",
+                    "type": "free",
+                    "description": "<p>You walk up to the counter. When you arive, she says,</p> <p>'Hey, nice to meet you! I'm Hakkin, I just opened up this store. It seems like we'll be neighbors, huh?'</p> <p>After finishing her little spiel, she smiles again and holds out her hand for you to shake. She's short enough that she has to lean forward over the counter slightly to reach you. You shake her hand and she leans back.</p> <p>'So, wanna buy something?'</p>",
+                    "injectors": [],
+                    "buttons": [
+                        {
+                            "id": 0,
+                            "name": "Talk",
+                            "target": "hakkin_talk",
+                            "type": "free"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Shop",
+                            "target": "hakkin_shop",
+                            "targetType": "shop"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Contract Shop",
+                            "target": "hakkin_shop_contracts",
+                            "targetType": "shop"
+                        },
+                        {
+                            "id": 14,
+                            "name": "Return",
+                            "target": "general_store",
+                            "type": "free"
+                        }
+                    ]
+                },
+                "hakkin_talk" : {
+                    "id": "hakkin_talk",
+                    "type": "free",
+                    "description": "<p>You ask her name.</p> <p>She replies, 'I'm Hakkin! I run the general store in this city. If you want to know anything about what I'm selling, just ask. I might not look like it, but I've been a merchant for longer than you've been alive, so I know my stuff.'</p>",
+                    "injectors": [],
+                    "returnType": "lastScene",
+                    "returnText": "",
+                    "buttons": [
+                        {
+                            "id": 14,
+                            "name": "Return",
+                            "target": "general_store",
+                            "type": "free"
+                        }
+                    ]
+                }
+            },
+            "playerinn": {
+                "unused" : {
+                    "id": "unused",
+                    "type": "free",
+                    "description": "<p>You ask her name.</p> <p>She replies, 'I'm Hakkin! I run the general store in this city. If you want to know anything about what I'm selling, just ask. I might not look like it, but I've been a merchant for longer than you've been alive, so I know my stuff.'</p>",
+                    "injectors": [],
+                    "returnType": "lastScene",
+                    "returnText": "",
+                    "buttons": [
+                        {
+                            "id": 14,
+                            "name": "Return",
+                            "target": "general_store",
+                            "type": "free"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

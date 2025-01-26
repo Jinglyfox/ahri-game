@@ -1,0 +1,76 @@
+{
+    "armor": {
+        "nipple armor": {
+            "id": "nipple armor",
+            "name": "nipple armor",
+            "category": "armor",
+            "subcategory": "heavy",
+            "description": "armor for thine nipples",
+            "price": [0, 500, 1, 0],
+            "sellable": true
+        }
+    },
+    "consumable": {
+        "medHealPot": {
+            "id": "medHealPot",
+            "name": "medium potion of healing",
+            "category": "consumable",
+            "subcategory": "potion",
+            "description": "really?",
+            "price": [0, 0, 10, 0],
+            "sellable": true
+        }
+    },
+    "resource": {
+        "iron":{
+            "id": "iron",
+            "name": "iron",
+            "category": "resource",
+            "subcategory": "ore",
+            "description": "Metal for building things with.",
+            "price": [1, 0, 1, 0],
+            "sellable": true
+        }
+    },
+    "weapon": {
+        "froggius": {
+            "id": "froggius",
+            "name": "FROGGIUS, THE LEGENDARY BLADE",
+            "category": "weapon",
+            "subcategory": "sword",
+            "description": "THE MOST LEGENDARY BLADE THERE EVER DID BE",
+            "price": [0, 0, 0, 100],
+            "sellable": false
+        },
+        "ironsword": {
+            "id": "ironsword",
+            "name": "Iron Sword",
+            "category": "weapon",
+            "subcategory": "sword",
+            "description": "An iron sword. Not spectacularly sharp, but not dull either.",
+            "price": [0, 0, 100, 0],
+            "sellable": true,
+            "salePriceMultiplier": 0.6
+        },
+        "woodbow": {
+            "id": "woodbow",
+            "name": "Wooden Bow",
+            "category": "weapon",
+            "subcategory": "bow",
+            "description": "Rootie tootie point and shooty. Good for attacking from afar.",
+            "price": [0, 0, 100, 0],
+            "sellable": true,
+            "salePriceMultiplier": 0.5
+        },
+        "ironbow": {
+            "id": "ironbow",
+            "name": "Iron Bow",
+            "category": "weapon",
+            "subcategory": "bow",
+            "description": "Whether or not iron makes for a better bow in general is up for debate. It certainly does in this case, though.",
+            "price": [0, 0, 300, 0],
+            "sellable": true,
+            "salePriceMultiplier": 0.2
+        }
+    }
+}

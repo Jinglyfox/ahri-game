@@ -1,0 +1,728 @@
+:root {
+	--gameAreaBackground: #6d3402;
+	--buttonColor: #1D0600;
+	--menuColorA: #1D0600;
+	--menuColorB: #391B00;
+	--menuColorC: #5e2f06;
+	--oddItemCard: #643409;
+	--evenItemCard: #502907;
+	--accentColorA: #BF0000;
+	--accentColorB: #CCBA78;
+	--highlight: #8B0000;
+	--overlayColor: #3f1f02;
+	--moneyBackground: #522600;
+	--headerColor: rgb(228, 228, 228);
+	--fontColor: white;
+}
+
+body {
+	margin: 0px 0px 0px 0px;
+	font-size: 2vh;
+	color: var(--fontColor);
+	background: black;
+	font-family: openSansRegular;
+}
+
+
+#gameWrapper {
+	height: 56.25vw;
+	width: 100vw;
+	max-height: 100vh;
+	max-width: 177.7777vh;
+	display: flex;
+	justify-content: space-between;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	position: fixed;
+	margin: auto;
+}
+
+/* FONTS */
+
+@font-face {
+	font-family: "openSansRegular";
+	src: url("resources/fonts/OpenSans-Regular.ttf");
+}
+
+
+/* END FONTS */
+
+
+/* SIDEBAR */
+
+.sidebar {
+	height: 100%;
+	width: 15%;
+	background-color: var(--menuColorA);
+}
+
+#sidebarRight {	
+	right: 0;
+	transition-duration: 0.1s;
+}
+
+
+.removeSidebar {
+	transform: translate(100%);
+	opacity: 0;
+}
+
+.removeButtonDock {
+	opacity: 0;
+}
+
+/* END SIDEBAR */
+
+
+/* GAME AREA */
+
+#gameArea {
+	height: 100%;
+	background-color: var(--gameAreaBackground);
+}
+
+.overworld {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+/* END GAME AREA */
+
+
+/* OVERWORLD SCENE CSS */
+
+#textWrapper {
+	height: 79%;
+}
+
+#textArea {
+	position: relative;
+	height: 90%;
+	width: 95%;
+	border-radius: 25px;
+	left: 0.5%;
+	top: 2%;
+	padding-left: 0.5%;
+	padding-right: 1.5%;
+	padding-bottom: 2%;
+	overflow-y: auto;
+}
+
+/* END OVERWORLD SCENE */
+
+
+/* VENDOR CSS */
+
+#shopWrapper {
+	display: flex;
+	width: 100%;
+	height: 95%;
+	margin-top: 1em;
+	gap: 1.2em;
+}
+
+#shopLeft {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 0.8em;
+	width: 50%;
+	height: 100%;
+}
+
+#shopRight {
+	position: relative;
+	display: flex;
+	gap: 0.5em;
+	justify-content: space-between;
+	flex-direction: column;
+	width: 50%;
+	height: 100%;
+}
+
+
+
+/* CARD CSS (item info card, vendor card, etc) */
+
+.cardHeader {
+	font-family: fantasy;
+	font-size: 110%;
+	color: var(--headerColor);
+}
+
+.cardHeaderContainer {
+	display: flex;
+	justify-content: space-between;
+}
+
+.itemCardHeader {
+	display: flex;
+	justify-content: space-between;
+}
+
+
+.cardShape {
+	padding: 0.375em;
+	border-radius: 0.5em;
+	background: var(--menuColorA);
+	display: flex;
+	flex-direction: column;
+	margin: 0 1% 0 1%;
+}
+
+.cardTextArea {
+	background: var(--menuColorB);
+	font-size: 85%;
+	padding: 0.5em 0.5em 0.2em 0.5em;
+	flex: 1;
+}
+
+
+#vendorCard {
+	min-height: 25%;
+}
+
+#itemInfoCard {
+	flex: 1;
+	margin-bottom: 0;
+}
+
+#itemInfoCard .disabled {
+	opacity: 0.4;
+}
+
+.underline {
+	height:0.2em;
+	width: 100%;
+	margin-top: -0.2em;
+	background: var(--accentColorA);
+}
+
+/* END CARD CSS */
+
+/* SHOP INVENTORY HEADER */
+#shopInventoryHeader {
+	display: flex;
+	margin: 0 1% 0 1%;
+	height: 5%;
+	justify-content: space-between;
+}
+
+#shopTitle {
+	background: var(--menuColorA);
+	width: 50%;
+	font-family: fantasy;
+	font-size: 1.625em;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	border-radius: 0.5em;
+	margin: 0 1% 0 1%;
+	align-self: center;
+	text-align: center;
+}
+
+.shopDockButton {
+	border-radius: 0.5em;
+	font: inherit;
+	flex: 1;
+}
+/* END SHOP INVENTORY HEADER */
+
+/* SHOP INVENTORY */
+
+#inventoryFilters {
+	display: flex;
+	justify-Content: space-between;
+	height: 2.625em
+}
+
+.inventoryFilter {
+	display: flex;
+	border-style: solid;
+	border-width: 0.1em 0.1em 0.25em 0.1em;
+	font: inherit;
+	border-color: var(--menuColorA);
+	background-color: var(--menuColorB);
+	justify-content: center;
+	align-self: flex-end;
+	padding: .2em 0 .2em 0;
+	border-radius: .2em .2em 0 0;
+	flex: 1;
+	transition: .05s;
+}
+
+.inventoryFilter:hover {
+	cursor: pointer;
+}
+
+.inventoryFilter img {
+	width: 1.3em;
+	height: 1.3em;
+	transition: 0.1s;
+	
+}
+
+.inactiveFilter:hover {
+	background: var(--highlight);
+}
+
+.activeFilter {
+	background-color: var(--highlight);
+}
+
+
+.activeFilter img {
+	height: 1.5em;
+	width: 1.5em;
+}
+
+
+#shopInventoryWrapper {
+	background: var(--menuColorA);
+	display: flex;
+	flex-direction: column;
+	padding: 0.375em;
+	height: 80%;
+	margin: 0 1% 0 1%;
+	border-radius: 0.5em;
+}
+
+#itemList {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	gap: 1em;
+	padding-top: 0.2em;
+	padding-bottom: 0.5em;
+	overflow-y: auto;
+}
+
+#itemList .itemListCard:nth-child(odd) {
+	background: var(--oddItemCard);
+}
+
+#itemList .itemListCard:nth-child(even) {
+	background: var(--evenItemCard);
+}
+
+
+/* END SHOP INVENTORY */
+
+
+/* ITEM LIST CARD CSS (cards in vendor) */
+
+.itemOutOfStock {
+	opacity: 0.4;
+}
+
+.itemListCard {
+	display: flex;
+	border-radius: 0.5em;
+	margin-left: 0.1em;
+	margin-right: 0.2em;
+	padding: 0.3em;
+	gap: 0.5em;
+}
+
+.itemImg {
+	width: 3em;
+	height: 3em;
+	padding: .2em;
+	border-radius: 0.5em;
+	background-color: var(--menuColorB);
+}
+
+.itemCardText {
+	display: flex;
+	flex-direction: column;
+	padding: 0.1em;
+	flex: 1;
+}
+
+.itemCardInfo {
+	display:flex;
+	justify-content: space-between;
+	margin-top: 0.3em;
+}
+
+.itemCardCost {
+	align-self: center;
+	display: flex;
+	justify-content: space-between;
+	gap: 0.5em;
+}
+
+.itemCardCost > * {
+	flex: 1;
+	text-align: right;
+}
+
+.itemCardQuantityControl {
+	align-self: flex-end;
+	display: grid;
+	grid-template-columns: 1fr 2fr 1fr;
+}
+
+.itemCardRemaining {
+	font-style: italic;
+	font-size: 70%;
+	font-family: Tahoma, sans-serif;
+	color: rgb(180, 180, 180);
+}
+
+.itemCardUniqueItem {
+	align-self: flex-end;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+.itemCardBuyLess, .itemCardBuyMore {
+	border-radius: 0.1em;
+	height: auto;
+}
+
+.itemCardQuantity {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.quantityInput {
+	width: 3em;
+	border: 0.2em solid var(--highlight);
+	border-radius: 0.5em;
+	align-self: center;
+	color: white;
+	font: inherit;
+	background-color: var(--menuColorB);
+}
+
+#itemList .itemListCard.activeItemListCard {
+	background: var(--highlight);
+}
+
+
+#itemList .itemListCard:hover {
+	background: var(--highlight);
+	cursor: pointer;
+}
+/* END ITEM LIST CARD */
+
+/* TOTAL PRICE */
+
+#totalPrice {
+	display: flex;
+	justify-content: space-between;
+	background: var(--menuColorA);
+	padding: 1em;
+	border-radius: 0.5em;
+	margin: 0 1% 0 1%;
+}
+
+#runningTotal {
+	display: flex;
+	gap: .2em;
+	justify-content: space-between;
+}
+
+
+/* END TOTAL PRICE */
+
+
+/* SHOP BUTTON DOCK CSS */
+
+#shopDock {
+	margin: 0 1% 0 1%;
+	height: 6%;
+	gap: 0.2em;
+	display: flex;
+	justify-content: space-between;
+}
+
+
+
+
+
+
+/* END SHOP BUTTON DOCK */
+
+
+/* END VENDOR */
+
+
+
+
+/* MONEY BAR CSS */
+
+
+
+#moneybar {
+	position:relative;
+	border-radius: 0.5em;
+	height: 1.5em;
+	width: 95%;
+	left: 0;
+	margin-left: 1%;
+	display: flex;
+	background-color: var(--moneyBackground);
+}
+
+
+.money {
+	margin: 0;
+	display: flex;
+	justify-content: space-between;
+	position:relative;
+	border-left: 0.2em solid black;
+	flex: 1;
+}
+
+.money-amount{
+	align-self: flex-end;
+	font-size: 80%;
+	padding-right: 0.1em;
+	margin-left: 0.1em;
+}
+
+.money img {
+	height: 1em;
+	width: 1em;
+	align-self: flex-start;
+	padding-top: 0.4em;
+	padding-left: 0.1em;
+}
+
+
+
+
+
+
+/* END MONEY BAR CSS */
+
+
+/* REPORT UI */
+
+
+#reportWrapper {
+	display: flex;
+	flex-direction: column;
+	margin-top: 0.6em;
+	margin-bottom: 0.6em;
+	gap: .7em;
+	overflow-y: auto;
+}
+
+.employeeCard {
+	min-height: 10em;
+}
+
+/* END REPORT UI */
+
+
+/* BUTTON DOCK */
+
+.buttonRow {
+	flex: 1;
+	display: flex;
+	gap: 0.3em;
+}
+
+#buttonDock {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3em;
+	flex: 1;
+	margin-bottom: 0.6em;
+	transition-duration: 0.1s;
+}
+
+
+.hide {
+	display: none;
+}
+
+
+
+/* END BUTTON DOCK */
+
+
+/* BUTTONS */
+
+button {
+	font: inherit;
+	background-color: var(--buttonColor);
+	border: none;
+	border-radius: 0.5em;
+	margin: .2em;
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: var(--fontColor);
+	box-shadow: 0 0.2em 0.3em 0 black;
+	cursor: pointer;
+}
+
+button:hover, button.active {
+	background-color: var(--highlight);
+}
+
+button.active:disabled {
+	box-shadow: 0 0.2em 0.3em 0 black;
+	opacity: 1;
+}
+
+button:disabled, #itemInfoCard.disabled {
+	box-shadow: 0 0 0 0 black;
+	opacity: 0.4;
+}
+
+.buttonText {
+	overflow: hidden;
+	display: inline-block;
+	align-self: center;
+}
+
+
+/* END BUTTONS */
+
+/* DIALOGUE BOX */
+
+.dialogueBoxWrapper {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	opacity: 1;
+	z-index: 50;
+}
+
+.overlay {
+	width: 100%;
+	height: 100%;
+	background-color: var(--overlayColor);
+	opacity: 0.8;
+}
+
+.dialogueBox {
+	width: 40%;
+	height: 40%;
+	position: fixed;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-direction: column;
+	background-color: var(--menuColorA);
+	left: 50%;
+	top: 50%;
+	border: none;
+	border-radius: 0.5em;
+	gap: 1em;
+	transform: translate(-50%, -50%);
+}
+
+.dialogueBoxHeader {
+	width: 50%;
+	padding-top: 0.3em;
+	padding-bottom: 0.3em;
+	margin-top: 0.2em; 
+	background-color: var(--menuColorC);
+	border-radius: 0.5em;
+	border: none;
+	align-self: center;
+	text-align: center;
+	font-size: 200%;
+	font-family: fantasy;
+}
+
+.dialogueBoxContent {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2em;
+	flex: 1;
+	border-top: 0.2em solid var(--highlight);
+	border-bottom: 0.2em solid var(--highlight);
+	background: var(--menuColorC);
+	min-height: 50%;
+	width: 100%;
+	padding-left: 1em;
+	padding-right: 1em;
+	justify-content: center;
+}
+
+.dialogueBoxFooter {
+	background-color: var(--menuColorA);
+	flex: 1;
+}
+
+#quantityBoxFooterWrapper {
+	display: flex;
+	gap: .2em;
+}
+
+#quantityBoxFooterWrapper > * {
+	flex: 1;
+	width: 10em;
+}
+
+#quantityBox {
+	width: auto;
+	padding-left: 1em;
+	padding-right: 1em;
+	height: 50%;
+}
+
+#quantityInput {
+	width: 10em;
+	height: 2em;
+	border: 0.2em solid var(--highlight);
+	border-radius: 0.5em;
+	align-self: center;
+	color: white;
+	font: inherit;
+	background-color: var(--menuColorB);
+}
+
+#quantityContent{
+	display: flex;
+	justify-content: center;
+}
+
+#quantityContent button {
+	flex:0;
+	padding: 0.2em 1em 0.2em 1em;
+}
+
+.dialogueBoxFooter button {
+	align-self: center;
+	font-size: 150%;
+}
+
+button:focus:not(focus-visible) {
+	outline: none;
+}
+/* END DIALOGUE BOX */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
