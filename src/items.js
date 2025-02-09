@@ -1,263 +1,23 @@
 import globals from "./resources/data/globals.json"
+import items from "./resources/data/items.json"
 import { Money } from "./money"
 
-export class Inventory
-{
-	constructor()
-	{
-
-	}
-
-	containsItem(item, category)
-	{
-		return this[category].hasOwnProperty(item)
-	}
-
-	getItem(item, category)
-	{
-		return this[category][item]
-	}
-
-	checkEmpty()
-	{
-		for(let category in this)
-		{
-			for(let item in this[category])
-			{
-				if(this[category][item].getQuantity() > 0)
-				{
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	addItem(item, quantity = 0)
-	{
-		if(!this[item.getCategory()].hasOwnProperty(item.getId()))
-		{
-			this[item.getCategory()][item.getId()] = item;
-		}
-		this[item.getCategory()][item.getId()].addQuantity(quantity);
-	}
-
-	getAllInSubcategory(category, subcategory)
-	{
-		if(category == "all" || subcategory == "all")
-		{
-			return this.getAllInCategory(category)
-		}
-
-		let itemsInSubcategory = [];
-		for(let item in this[category])
-		{
-			if(this[category][item].getSubcategory() == subcategory)
-			{
-				itemsInSubcategory.push(this[category][item])
-			}
-		}
-		return itemsInSubcategory;
-	}
-
-	getAllInCategory(filter)
-	{
-		let itemsInCategory = [];
-		if(filter == "all")
-		{
-			for(let category in this)
-			{
-				for(let item in this[category])
-				{
-					itemsInCategory.push(this[category][item]);
-				}
-			}
-		}
-		else
-		{
-			for(let item in this[filter])
-			{
-				itemsInCategory.push(this[filter][item]);
-			}
-		}
-		
-		return itemsInCategory;
-	}
-
-	initializeInventory(categories)
-	{
-		for(let category of categories)
-		{
-			this[category] = {};
-		}
-	}
-
-	reinitializeInventory()
-	{
-		for(let category in this)
-		{
-			for(let item in this[category])
-			{
-				this[category][item] = Object.assign(new Item(), this[category][item]);
-			}
-		}
-	}
-
-	getEmptyCategories()
-	{
-		let emptyCategories = []
-		for(let category in this)
-		{
-			if(Object.keys(this[category]) == 0)
-			{
-				emptyCategories.push(category);
-			}
-		}
-		return emptyCategories;
-	}
-
-	removeItem(item, quantity = 1)
-	{
-		let category = item.getCategory();
-		let id = item.getId();
-		if(this[category][id].quantity > quantity)
-		{
-			this[category][id].quantity -= quantity;
-		}
-		else if(this[category][id].quantity <= quantity)
-		{
-			let truncatedInventory = {};
-			for(let itemId in this[category])
-			{
-				if(itemId != id)
-				{
-					truncatedInventory[itemId] = this[category][itemId];
-				}
-			}
-			this[category] = truncatedInventory;
-		}
-	}
-
-	/*
-	
-
-	canRemoveItem(item, quantity = 1)
-	{
-		if(this[item].quantity >= quantity)
-		{
-			return true;
-		}
-		return false;
-	}
-
-	getExcludedCategories()
-	{
-		let includedCategories = new Array();
-		let excludedCategories = new Array();
-		for(let item in this)
-		{
-			if(!includedCategories.includes(this[item].type))
-			{
-				includedCategories.push(this[item].type);
-			}
-		}
-		for(let category in data.itemDict.itemCategories)
-		{
-			
-			if(!includedCategories.includes(data.itemDict.itemCategories[category]))
-			{
-				excludedCategories.push(data.itemDict.itemCategories[category]);
-			}
-		}
-		return excludedCategories;
-	}
-
-	containsItemOfCategory(category)
-	{
-		if(category === "all")
-		{
-			return true;
-		}
-		for(let item in this)
-		{
-			if(this[item].type === category)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	filterInventory(category)
-	{
-		let filteredInventory = new Inventory();
-		for(let item in this)
-		{
-			if(category === "all" || this[item].type === category)
-			{
-				filteredInventory.items[item] = this[item];
-			}
-		}
-		return filteredInventory;
-	}
-
-	containsItems()
-	{
-		for(let item in this)
-		{
-			if(this[item].quantity > 0)
-			{
-				return true;
-			}
-		}
-		return false;
-	} */
-}
-
 export class Item {
-	constructor(id="", name="", category="", description= "", price = [0,0,0,0], sellable = true)
+	constructor(id="", name="", category="", description= "", priceRaw = 0, priceDenom = [], sellable = true)
 	{
 		this.id = id;
 		this.name = name;
 		this.category = category;
 		this.description = description;
-		this.price = price;
+		this.priceRaw = priceRaw == 0 && priceDenom != [] ? Money.convertDenomToRaw(priceDenom) : priceRaw;
+		this.priceDenom = priceDenom == [] ? Money.convertRawToDenoms(priceRaw) : priceDenom;
+		//almost everything should just be flags. Whether or not it's unique, etc. Why is quantity also tied to the fucking item? tie it to the inventory.
 		this.sellable = sellable;
-		this.salePriceMultiplier = globals.salePriceMultiplier;
-		this.quantity = 0;
-	}
-
-	setSalePrice()
-	{
-        if(this.hasOwnProperty("salePrice"))
-        {
-            this.salePrice = this.salePrice;
-        }
-        else
-        {
-            let rawValue = Math.floor(Money.convertDenomsToRaw(this.price) * this.salePriceMultiplier);
-            this.salePrice = Money.convertRawToDenoms(rawValue);
-        }
 	}
 
 	getSubcategory()
 	{
 		return this.subcategory;
-	}
-
-	addQuantity(amount)
-	{
-		this.quantity += amount;
-	}	
-
-	removeQuantity(amount)
-	{
-		this.quantity -= amount;
-	}
-
-	getQuantity()
-	{
-		return this.quantity;
 	}
 
 	getName()
@@ -275,24 +35,14 @@ export class Item {
 		return this.description;
 	}
 
-	getQuantity()
+	getPriceRaw()
 	{
-		return this.quantity;
+		return this.priceRaw;
 	}
 
-	getSalePriceMultiplier()
+	getPriceDenom()
 	{
-		return this.salePriceMultiplier;
-	}
-
-	getSalePrice()
-	{
-		return this.salePrice;
-	}
-
-	getPrice()
-	{
-		return this.price;
+		return this.priceDenom;
 	}
 
 	getCategory()
@@ -304,10 +54,6 @@ export class Item {
 	{
 		return this.id;
 	}
-}
-
-class ItemPrice {
-	
 }
 
 export class ItemDictionary {

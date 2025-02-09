@@ -11,27 +11,39 @@
                 {
                     "id": 0,
                     "name": "Enter Inn",
-                    "target": ["playerinn", "inn_entrance"],
-                    "type": "free"
+                    "target": {
+                        "scene": "inn_entrance",
+                        "zone": "playerinn"
+                    },
+                    "type": "overworld"
                 },
                 {
                     "id": 10,
                     "name": "West",
-                    "target": "inntown_cell_3",
-                    "type": "free"
+                    "target": {
+                        "scene": "inntown_cell_3",
+                        "zone": "inntown"
+                    },
+                    "type": "overworld"
                 },
                 {
                     "id": 11,
                     "name": "South",
-                    "target": "general_store",
-                    "type": "free",
+                    "target": {
+                        "scene": "general_store",
+                        "zone": "inntown"
+                    },
+                    "type": "overworld",
                     "timeAvailable": [6, 20]
                 },
                 {
                     "id": 12,
                     "name": "East",
-                    "target": "inntown_crossroad",
-                    "type": "free"
+                    "target": {
+                        "scene": "inntown_crossroad",
+                        "zone": "inntown"
+                    },
+                    "type": "overworld"
                 }
             ]
         },
@@ -45,8 +57,11 @@
                 {
                     "id": 11,
                     "name": "South",
-                    "target": "inntown_cell_2",
-                    "type": "free"
+                    "target": {
+                        "scene": "inntown_cell_2",
+                        "zone": "inntown"
+                    },
+                    "type": "overworld"
                 }
             ]
         },
@@ -60,14 +75,20 @@
                 {
                     "id": 6,
                     "name": "North",
-                    "target": "inntown_cell_1",
-                    "type": "free"
+                    "target": {
+                        "scene": "inntown_cell_1",
+                        "zone": "inntown"
+                    },
+                    "type": "overworld"
                 },
                 {
                     "id": 12,
                     "name": "East",
-                    "target": "inntown_cell_3",
-                    "type": "free"
+                    "target": {
+                        "scene": "inntown_cell_3",
+                        "zone": "inntown"
+                    },
+                    "type": "overworld"
                 }
             ]
         },
@@ -81,14 +102,20 @@
                 {
                     "id": 10,
                     "name": "West",
-                    "target": "inntown_cell_2",
-                    "type": "free"
+                    "target": {
+                        "scene": "inntown_cell_2",
+                        "zone": "inntown"
+                    },
+                    "type": "overworld"
                 },
                 {
                     "id": 12,
                     "name": "East",
-                    "target": "inn_entrance",
-                    "type": "free"
+                    "target": {
+                        "scene": "inn_entrance",
+                        "zone": "inntown"
+                    },
+                    "type": "overworld"
                 }
             ]
         },
@@ -102,8 +129,11 @@
                 {
                     "id": 10,
                     "name": "West",
-                    "target": "inn_entrance",
-                    "type": "free"
+                    "target": {
+                        "scene": "inn_entrance",
+                        "zone": "inntown"
+                    },
+                    "type": "overworld"
                 }
             ]
         },
@@ -117,8 +147,11 @@
                 {
                     "id": 6,
                     "name": "North",
-                    "target": "inn_entrance",
-                    "type": "free"
+                    "target": {
+                        "scene": "inn_entrance",
+                        "zone": "inntown"
+                    },
+                    "type": "overworld"
                 }
             ]
         }
@@ -134,14 +167,17 @@
                 {
                     "id": 0,
                     "name": "Exit Inn",
-                    "target": ["inntown", "inn_entrance"],
-                    "type": "free"
+                    "target": {
+                        "scene": "inn_entrance",
+                        "zone": "inntown"
+                    },
+                    "type": "overworld"
                 },
                 {
                     "id": 1,
                     "name": "Go To Sleep",
                     "timeCost": [1, "day"],
-                    "type": "free"
+                    "type": "overworld"
                 }
             ]
         }

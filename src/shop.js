@@ -1,8 +1,21 @@
-import { Inventory } from "./items"
+import { Inventory } from "./inventory"
 import { Money } from "./money"
+import shops from "./resources/data/shops.json"
 
 
-export class Shop {
+export class ShopData {
+    constructor()
+    {
+        this.activeShop = {};
+    }
+
+    setShop(shop)
+    {
+        this.activeShop = Object.assign(new Shop(), JSON.parse(JSON.stringify(shops[shop])));
+    }
+}
+
+class Shop {
     constructor(vendor, inventory, type="item", canSell=true, canBuy=true)
     {
         this.vendor = vendor;
