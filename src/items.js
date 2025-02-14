@@ -3,14 +3,16 @@ import items from "./resources/data/items.json"
 import { Money } from "./money"
 
 export class Item {
-	constructor(id="", name="", category="", description= "", priceRaw = 0, priceDenom = [], sellable = true)
+	constructor(id="", name="", category="", subcategory="", description= "", priceRaw = 0, priceDenom = [], sellable = true)
 	{
 		this.id = id;
 		this.name = name;
 		this.category = category;
+		this.subcategory = subcategory;
 		this.description = description;
 		this.priceRaw = priceRaw == 0 && priceDenom != [] ? Money.convertDenomToRaw(priceDenom) : priceRaw;
 		this.priceDenom = priceDenom == [] ? Money.convertRawToDenoms(priceRaw) : priceDenom;
+		this.flags = [];
 		//almost everything should just be flags. Whether or not it's unique, etc. Why is quantity also tied to the fucking item? tie it to the inventory.
 		this.sellable = sellable;
 	}
@@ -40,8 +42,11 @@ export class Item {
 		return this.priceRaw;
 	}
 
+	
+
 	getPriceDenom()
 	{
+		this.priceDenom = Money.convertRawToDenoms(this.priceRaw);
 		return this.priceDenom;
 	}
 
@@ -54,22 +59,29 @@ export class Item {
 	{
 		return this.id;
 	}
+
+	hasFlag(flag)
+	{
+		return this.flags.includes(flag);
+	}
 }
 
-export class ItemDictionary {
+export class ItemData {
     constructor()
     {
 
     }
 
+
+
 	initializeDictionary()
 	{
-		for(let category in this)
+		for(let category in items)
 		{
-			for(let item in this[category])
+			this[category] = {}
+			for(let item in items[category])
 			{
 				this[category][item] = Object.assign(new Item(), this[category][item]);
-				this[category][item].setSalePrice();
 			}
 		}
 	}
@@ -79,7 +91,7 @@ export class ItemDictionary {
 		return this[category];
 	}
 
-	findItemById(itemId)
+	getItemById(itemId)
 	{
 		for(let category in this)
 		{
@@ -114,11 +126,12 @@ export class ItemDictionary {
 		return Object.assign(new Item(), JSON.parse(JSON.stringify(this[category][item])));
 	}
 	
-	getSubcategories(parentCategory)
+	getItemSubcategories(parentCategory)
 	{
 		let subCategories = new Array()
 		if(parentCategory !== "all")
 		{
+			console.log(parentCategory);
 			for(let item in this[parentCategory])
 			{
 				if(!subCategories.includes(this[parentCategory][item].getSubcategory()))
@@ -130,7 +143,7 @@ export class ItemDictionary {
 		return subCategories
 	}
 
-	getCategories()
+	getItemCategories()
 	{
 		let categories = new Array();
 		for(let category in this)

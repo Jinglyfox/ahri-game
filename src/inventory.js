@@ -1,32 +1,97 @@
-import { ItemDictionary } from "./items";
+import items from "./resources/data/items.json"
+import { Item } from "./items";
+import globals from "./resources/data/globals.json"
+import { Money } from "./money";
+
+/*
+I want inventory objects to have a list of items 
+
+
+
+*/
+
 
 export class Inventory
 {
-	constructor(items = null)
+	constructor(itemsUnsorted = {})
 	{
-        this.items = items;
+        this.itemsUnsorted = itemsUnsorted;
+        this.itemsSorted = {}
+        this.emptyCategories = [];
 	}
+
+    initializeInventory()
+    {
+        for(let item in this.itemsUnsorted)
+        {
+            for(let category in items)
+            {
+                if(items[category].hasOwnProperty(item))
+                {
+                    let itemObject = Object.assign(new Item(), items[category][item]);
+                    let quantity = this.itemsUnsorted[item].quantity;
+                    this.itemsUnsorted[item] = new InventoryItem(itemObject, quantity);
+                }
+            }
+        }
+    }
+
+    getItemSubcategories(category)
+    {
+        let subCategories = new Array()
+		if(category !== "all")
+		{
+			for(let item in this.itemsSorted[category])
+			{
+                if(!subCategories.includes(this.itemsSorted[category][item].getSubcategory()))
+				{
+					subCategories.push(this.itemsSorted[category][item].getSubcategory())
+				}
+			}
+		}
+		return subCategories
+    }
+
+    sortItems()
+    {
+        for(let item in this.itemsUnsorted)
+        {
+            let category = this.itemsUnsorted[item].getCategory();
+            if(!this.itemsSorted.hasOwnProperty(category))
+            {
+                this.itemsSorted[category] = {};
+            }
+            this.itemsSorted[category][item] = this.itemsUnsorted[item];
+        }
+        for(let category in items)
+        {
+            if(!this.itemsSorted.hasOwnProperty(category))
+            {
+                this.emptyCategories.push(category);
+            }
+        }
+    }
 
 	containsItem(item)
 	{
-		return this.items.hasOwnProperty(item)
+		return this.itemsUnsorted.hasOwnProperty(item)
 	}
 
 	getItem(item)
 	{
 		if(this.containsItem(item))
         {
-            return this.items[item]
+            return this.itemsUnsorted[item]
         }
         console.log("Error: Attempted to pull item not in inventory.");
         return undefined;
 	}
 
-	checkEmpty()
+	isEmpty()
 	{
-		for(let item in this.items)
+		for(let item in this.itemsUnsorted)
 		{
-            if(this[item].getQuantity() > 0) 
+            if(this.itemsUnsorted[item].getQuantity() > 0) 
             {
                 return false;
             }
@@ -34,27 +99,60 @@ export class Inventory
 		return true;
 	}
 
-	addItem(item, quantity = 0)
+    boughtItems(itemsBought)
+    {
+        for(let i = 0; i < itemsBought.length; i++)
+        {
+            this.addItem(itemsBought[i].getId(), itemsBought[i].getQuantityInCart());
+        }
+    }
+
+    soldItems(itemsSold)
+    {
+        for(let i = 0; i < itemsSold.length; i++)
+        {
+            this.removeItem(itemsSold[i].getId(), itemsSold[i].getQuantityInCart());
+        }
+        
+    }
+
+	addItem(item, quantity = 1)
 	{
-		if(!this.items.hasOwnProperty(item.getId()))
+		if(!this.itemsUnsorted.hasOwnProperty(item))
 		{
-			this.items[item.getId()] = item;
+			for(let category in items)
+            {
+                if(items[category].hasOwnProperty(item))
+                {
+                    let itemObject = Object.assign(new Item(), items[category][item]);
+                    this.itemsUnsorted[item] = new InventoryItem(itemObject, 0)
+                }
+            }
 		}
-		this.items[item.getId()].addQuantity(quantity);
+		this.itemsUnsorted[item].addQuantity(quantity);
+        this.sortItems();
 	}
 
-	getAllInSubcategory(category, subcategory)
+    removeItem(item, quantity = 1)
 	{
-		if(category == "all" || subcategory == "all")
+		if(this.itemsUnsorted[item].getQuantity() > quantity)
 		{
-			return this.getAllInCategory(category)
+			this.itemsUnsorted[item].subtractQuantity(quantity);
 		}
-		let itemsInSubcategory = [];
-		for(let item in this.items)
+		else if(this.itemsUnsorted[item].getQuantity() <= quantity)
 		{
-			if(this.items[item].getSubcategory() == subcategory)
+			delete this.itemsUnsorted[item];
+		}
+	}
+
+	getAllInSubcategory(subcategory)
+	{
+		let itemsInSubcategory = [];
+        for(let item in this.itemsUnsorted)
+		{
+            if(this.itemsUnsorted[item].getSubcategory() == subcategory)
 			{
-				itemsInSubcategory.push(this.items[item])
+                itemsInSubcategory.push(this.itemsUnsorted[item])
 			}
 		}
 		return itemsInSubcategory;
@@ -62,123 +160,214 @@ export class Inventory
 
 	getAllInCategory(filter)
 	{
-		let itemsInCategory = [];
-		if(filter == "all")
+        if(filter == "all")
 		{
-			return this.items;
+            return this.itemsUnsorted;
 		}
 		else
 		{
-			for(let item in this.items)
-			{
-				if(this.items.getCategory() == filter)
-                {
-                    itemsInCategory.push(this.items[item]);
-                }
-			}
+			return this.itemsSorted[filter]
 		}		
-		return itemsInCategory;
 	}
+
+    getUnsortedItems()
+    {
+        return this.itemsUnsorted;
+    }
 
 	getEmptyCategories()
 	{
-		let emptyCategories = []
-		for(let category in this)
-		{
-			if(Object.keys(this[category]) == 0)
-			{
-				emptyCategories.push(category);
-			}
-		}
-		return emptyCategories;
+        return this.emptyCategories;
+	}
+}
+
+export class ShopInventory extends Inventory
+{
+    constructor(itemsUnsorted = {})
+	{
+        super(itemsUnsorted)
 	}
 
-	removeItem(item, quantity = 1)
-	{
-		let id = item.getId();
-		if(this.items[id].quantity > quantity)
-		{
-			this.items[id].quantity -= quantity;
-		}
-		else if(this.items[id].quantity <= quantity)
-		{
-			delete this.items[id];
-		}
-	}
-    
-    
-	/*
-	
+    setSalePrices()
+    {
+        for(let item in this.itemsUnsorted)
+        {
+            this.itemsUnsorted[item].setSalePrice();
+        }
+    }
 
-	canRemoveItem(item, quantity = 1)
+    initializeInventory()
+    {
+        for(let item in this.itemsUnsorted)
+        {
+            for(let category in items)
+            {
+                if(items[category].hasOwnProperty(item))
+                {
+                    let itemObject = Object.assign(new Item(), items[category][item]);
+                    let quantity = this.itemsUnsorted[item].quantity;
+                    this.itemsUnsorted[item] = new ShopItem(itemObject, quantity, 0);
+                    this.itemsUnsorted[item].setPrice();
+                }
+            }
+        }
+    }
+
+    getSoldItems()
+    {
+        let soldItems = []
+        for(let item in this.itemsUnsorted)
+        {
+            if(this.itemsUnsorted[item].getQuantityInCart() > 0)
+            {
+                soldItems.push(this.itemsUnsorted[item])
+            }
+        }
+        return soldItems;
+    }
+
+    setQuantityInCart(item, quantity)
+    {
+        this.itemsUnsorted[item].setQuantityInCart(quantity);
+    }
+
+    areItemsAdded()
+    {
+        for(let item in this.itemsUnsorted)
+        {
+            if(this.itemsUnsorted[item].getQuantityInCart() > 0)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+export class InventoryItem
+{
+    constructor(item = null, quantity = 0)
+    {
+        this.item = item;
+        this.quantity = quantity;
+    }
+
+    addQuantity(quantity)
+    {
+        this.quantity += quantity;
+    }
+
+    subtractQuantity(quantity)
+    {
+        this.quantity -= quantity;
+    }
+
+    getId()
+    {
+        if(this.item == null)
+        {
+            return "";
+        }
+        return this.item.getId();
+    }
+
+    hasFlag(flag)
+    {
+        return this.item.hasFlag(flag);
+    }
+
+    getQuantity()
+    {
+        return this.quantity;
+    }
+
+    getDescription()
+    {
+        return this.item.getDescription();
+    }
+
+    getName()
+    {
+        return this.item.getName();
+    }
+
+    getCategory()
+    {
+        return this.item.getCategory();
+    }
+
+    getQuantity()
+    {
+        return this.quantity;
+    }
+
+    getPriceRaw()
+    {
+        return this.item.getPriceRaw();
+    }
+
+    getPriceDenom()
 	{
-		if(this[item].quantity >= quantity)
-		{
-			return true;
-		}
-		return false;
+		return this.item.getPriceDenom();
 	}
 
-	getExcludedCategories()
+    getSubcategory()
+    {
+        return this.item.getSubcategory();
+    }
+}
+
+export class ShopItem extends InventoryItem 
+{
+    constructor(item = null, quantity = 0, quantityInCart = 0, price = 0)
+    {
+        super(item, quantity);
+        this.quantityInCart = quantityInCart;
+        this.price = price;
+    }
+
+    getFormattedPrice()
+    {
+		return Money.formatPrice(Money.convertRawToDenoms(this.price));
+    }
+
+    getPriceRaw()
+    {
+        return this.price;
+    }
+
+    getPriceDenom()
 	{
-		let includedCategories = new Array();
-		let excludedCategories = new Array();
-		for(let item in this)
-		{
-			if(!includedCategories.includes(this[item].type))
-			{
-				includedCategories.push(this[item].type);
-			}
-		}
-		for(let category in data.itemDict.itemCategories)
-		{
-			
-			if(!includedCategories.includes(data.itemDict.itemCategories[category]))
-			{
-				excludedCategories.push(data.itemDict.itemCategories[category]);
-			}
-		}
-		return excludedCategories;
+		return Money.convertRawToDenoms(this.price);
 	}
 
-	containsItemOfCategory(category)
-	{
-		if(category === "all")
-		{
-			return true;
-		}
-		for(let item in this)
-		{
-			if(this[item].type === category)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+    setPrice()
+    {
+        this.price = this.item.getPriceRaw();
+    }
 
-	filterInventory(category)
-	{
-		let filteredInventory = new Inventory();
-		for(let item in this)
-		{
-			if(category === "all" || this[item].type === category)
-			{
-				filteredInventory.items[item] = this[item];
-			}
-		}
-		return filteredInventory;
-	}
+    setSalePrice()
+    {
+        this.price = Math.ceil(this.item.getPriceRaw() * globals.salePriceMultiplier);
+    }
 
-	containsItems()
-	{
-		for(let item in this)
-		{
-			if(this[item].quantity > 0)
-			{
-				return true;
-			}
-		}
-		return false;
-	} */
+    addQuantityInCart(quantity)
+    {
+        this.quantityInCart += quantity;
+    }
+
+    removeQuantityInCart(quantity)
+    {
+        this.quantityInCart -= quantity;
+    }
+
+    setQuantityInCart(quantity)
+    {
+        this.quantityInCart = quantity;
+    }
+
+    getQuantityInCart()
+    {
+        return this.quantityInCart;
+    }
 }

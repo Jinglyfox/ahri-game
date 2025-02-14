@@ -6,7 +6,7 @@
             "category": "armor",
             "subcategory": "heavy",
             "description": "armor for thine nipples",
-            "price": 150000,
+            "priceRaw": 150000,
             "sellable": true
         }
     },
@@ -17,7 +17,7 @@
             "category": "consumable",
             "subcategory": "potion",
             "description": "really?",
-            "price": 10000000,
+            "priceRaw": 10000000,
             "sellable": true
         }
     },
@@ -28,7 +28,7 @@
             "category": "resource",
             "subcategory": "ore",
             "description": "Metal for building things with.",
-            "price": 1000001,
+            "priceRaw": 1000001,
             "sellable": true
         }
     },
@@ -39,7 +39,10 @@
             "category": "weapon",
             "subcategory": "sword",
             "description": "THE MOST LEGENDARY BLADE THERE EVER DID BE",
-            "price": 100000000000,
+            "priceRaw": 100000000000,
+            "flags": [
+                    "unique"
+                ],
             "sellable": false
         },
         "ironsword": {
@@ -48,7 +51,7 @@
             "category": "weapon",
             "subcategory": "sword",
             "description": "An iron sword. Not spectacularly sharp, but not dull either.",
-            "price": 100000000,
+            "priceRaw": 100000000,
             "sellable": true,
             "salePriceMultiplier": 0.6
         },
@@ -58,7 +61,7 @@
             "category": "weapon",
             "subcategory": "bow",
             "description": "Rootie tootie point and shooty. Good for attacking from afar.",
-            "price": 100000000,
+            "priceRaw": 100000000,
             "sellable": true,
             "salePriceMultiplier": 0.5
         },
@@ -68,7 +71,7 @@
             "category": "weapon",
             "subcategory": "bow",
             "description": "Whether or not iron makes for a better bow in general is up for debate. It certainly does in this case, though.",
-            "price": 300000000,
+            "priceRaw": 300000000,
             "sellable": true,
             "salePriceMultiplier": 0.2
         }

@@ -1,112 +1,153 @@
-import { Inventory } from "./inventory"
+import { ShopInventory, ShopItem } from "./inventory"
 import { Money } from "./money"
 import shops from "./resources/data/shops.json"
-
+import { player } from "./player";
+import globals from "./resources/data/globals.json"
 
 export class ShopData {
     constructor()
     {
         this.activeShop = {};
-    }
-
-    setShop(shop)
-    {
-        this.activeShop = Object.assign(new Shop(), JSON.parse(JSON.stringify(shops[shop])));
-    }
-}
-
-class Shop {
-    constructor(vendor, inventory, type="item", canSell=true, canBuy=true)
-    {
-        this.vendor = vendor;
-        this.inventory = inventory;
-        this.type = type;
-        this.canSell = canSell;
-        this.canBuy = canBuy;
+        this.activeItem = new ShopItem();
         this.runningTotal = 0;
         this.categoryFilter = "all";
         this.subcategoryFilter = "all";
-        this.activeItem = null;
+        this.displayedPage = "buy";
     }
 
-    resetInventory(categories)
+    getShopReturn()
     {
-        this.inventory = new ShopInventory();
-        this.inventory.initializeInventory(categories)
-    }
-
-    addInventory(inventory)
-    {
-        this.inventory.addInventory(inventory);
-    }
-
-    getInventoryList()
-    {
-        return this.inventoryList;
-    }
-
-    getReturnTarget()
-    {
-        return this.return;
+        return this.activeShop.getShopReturn();
     }
 
     checkout()
     {
-        let checkout = {};
-        checkout.bought = this.inventory.getSoldItems();
-        checkout.sold = this.virtualPlayerInventory.getSoldItems();
-        this.inventory.checkout();
-        return checkout;
+        player.soldItems(this.virtualPlayerShop.getSoldItems());
+        player.boughtItems(this.activeShop.getSoldItems());
+        player.addMoney(-this.runningTotal);
     }
 
     areItemsAdded()
     {
-        if(this.inventory.areItemsAdded() || this.virtualPlayerInventory.areItemsAdded())
+        if(this.activeShop.areItemsAdded() || this.virtualPlayerShop.areItemsAdded())
         {
             return true;
         }
         return false;
     }
 
-    getActiveItem()
+    getItemSubcategories()
     {
-        return this.activeItem;
+        return this.displayedShop.getItemSubcategories(this.categoryFilter);
     }
 
-    getActiveItemId()
-    {
-        if(this.activeItem == null)
-        {
-            return ''
-        }
-        return this.activeItem.getId();
-    }
-
-    setActiveItem(item)
-    {
-        this.activeItem = item;
-    }
-
-    getSubcategoryFilter()
-    {
-        return this.subcategoryFilter;
-    }
-
-    getCategoryFilter()
+    getActiveFilter()
     {
         return this.categoryFilter;
     }
-    
-    getEmptyCategories()
+
+    getDisabledMenu()
     {
-        if(this.displayedPage == "buy")
+        if(!this.activeShop.getCanBuy())
         {
-            return this.inventory.getEmptyCategories();
+            return 'buy';
+        }
+        else if(!this.activeShop.getCanSell() || this.virtualPlayerInventory.isEmpty())
+        {
+            return 'sell';
+        }
+        return ''
+    }
+
+    requestCanChangeQuantity(item, quantity)
+    {
+        let itemPrice = this.displayedPage == "buy" ? item.getPriceRaw() : -item.getPriceRaw();
+        let runningTotal = this.runningTotal;
+        let quantityInCart = item.getQuantityInCart();
+        if(player.canAfford(runningTotal + itemPrice * quantity))
+        {
+            if(quantityInCart + quantity > item.getQuantity())
+            {
+                return false;
+            }
+            if(quantityInCart + quantity > 9999)
+            {
+                return false;
+            }
+            if(quantityInCart + quantity < 0)
+            {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    getFormattedRunningTotal()
+    {
+        let totalString = [];
+        let total = Money.convertRawToDenoms(this.runningTotal);
+        if(this.runningTotal < 0)
+        {
+            totalString.push(<span key={total.length - 1}>+{total[total.length - 1]}{globals.denomAbbrevs[total.length - 1]}</span>);
+        }
+        else if(this.runningTotal > 0)
+        {
+            totalString.push(<span key={total.length - 1}>-{total[total.length - 1]}{globals.denomAbbrevs[total.length - 1]}</span>);
         }
         else
         {
-            return this.virtualPlayerInventory.getEmptyCategories();
+            totalString.push(<span key={total.length - 1}>{total[total.length - 1]}{globals.denomAbbrevs[total.length - 1]}</span>);
         }
+        for(let i = total.length - 2; i >= 0; i--)
+        {
+            totalString.push(<span key={i}>{total[i]}{globals.denomAbbrevs[i]}</span>);
+        }
+        return totalString;
+    }
+
+    setShopItemQuantity(item, quantity)
+    {
+        let itemPrice = this.displayedPage == "buy" ? item.getPriceRaw() : -item.getPriceRaw();
+        let runningTotal = this.runningTotal;
+        let quantityInCart = item.getQuantityInCart();
+        let maxAmountCanAfford = 0;
+        //if the player can afford the quantity
+        if(player.canAfford(runningTotal + itemPrice * (quantity - quantityInCart)))
+        {
+            if(quantity <= item.getQuantity())
+            {
+                if(quantity > 9999)
+                {
+                    quantity = 9999;
+                }
+                if(quantity < 0)
+                {
+                    quantity = 0;
+                }
+                maxAmountCanAfford = quantity;
+            }
+            else
+            {
+                maxAmountCanAfford = item.getQuantity();
+            }
+        }
+        else
+        {
+            maxAmountCanAfford = Math.floor((player.getMoneyRaw() - runningTotal)/Math.abs(itemPrice)) + quantityInCart;
+            if(maxAmountCanAfford > item.getQuantity())
+            {
+                maxAmountCanAfford = item.getQuantity();
+            }
+        }
+        this.runningTotal += (maxAmountCanAfford - quantityInCart) * itemPrice;
+        this.displayedShop.setQuantityInCart(item.getId(), maxAmountCanAfford);
+        return maxAmountCanAfford;
+    }
+
+    getEmptyCategories()
+    {
+        return this.displayedShop.getEmptyCategories();
     }
 
     getItemDisplayPrice(item)
@@ -121,6 +162,11 @@ class Shop {
         }
     }
 
+    getShopInventory()
+    {
+        return this.displayedShop.getFilteredInventory(this.categoryFilter, this.subcategoryFilter);
+    }
+
     getItemPrice(item)
     {
         if(this.displayedPage == "buy")
@@ -133,33 +179,16 @@ class Shop {
         }
     }
 
-    getVendor()
-    {
-        return this.vendor;
-    }
-
-    getShopInventory()
-    {
-        if(this.displayedPage == "buy")
-        {
-            return this.inventory.getAllInSubcategory(this.categoryFilter, this.subcategoryFilter);
-        }
-        else
-        {
-            return this.virtualPlayerInventory.getAllInSubcategory(this.categoryFilter, this.subcategoryFilter);
-        }
-    }
-
     setSubcategoryFilter(subcategory)
     {
         if(this.subcategoryFilter !== subcategory)
         {
             this.subcategoryFilter = subcategory;
-            if(this.activeItem !== null)
+            if(this.activeItem.getId() !== "")
             {
                 if(subcategory !== "all" && this.activeItem.getSubcategory() !== subcategory)
                 {
-                    this.activeItem = null;
+                    this.activeItem = new ShopItem();
                 }
             }
         }
@@ -171,67 +200,23 @@ class Shop {
         {
             this.categoryFilter = category;
             this.subcategoryFilter = "all";
-            if(this.activeItem !== null)
+            if(this.activeItem.getId() !== "")
             {
                 if(category !== "all" && this.activeItem.getCategory() !== category)
                 {
-                    this.activeItem = null;
+                    this.activeItem = new ShopItem();
                 }
             }
         }
     }
-
-    getDisabledMenu()
-    {
-        if(!this.canBuy)
-        {
-           return 'buy';
-        }
-        else if(!this.canSell || this.virtualPlayerInventory.checkEmpty())
-        {
-            return 'sell';
-        }
-        return '';
-    }
-
-    initializeShop(categories)
-    {
-        this.vendor = Object.assign(new Vendor(), this.vendor);
-        this.inventory = new ShopInventory();
-        this.inventory.initializeInventory(categories);
-        this.displayedPage = "buy";
-        if(!this.canBuy)
-        {
-            this.displayedPage = "sell";
-        }
-    }
-
-    getHeader()
+    
+    getShopHeader()
     {
         if(this.displayedPage == "buy")
         {
-            return this.vendor.getName();
+            return this.activeShop.getVendorName();
         }
         return "Stash"
-    }
-
-    setItemQuantity(item, quantity)
-    {
-        if(this.displayedPage == "buy")
-        {
-            this.runningTotal += (quantity - item.getQuantitySold()) * Money.convertDenomsToRaw(item.getPrice());
-        }
-        else
-        {
-            this.runningTotal -= (quantity - item.getQuantitySold()) * Money.convertDenomsToRaw(item.getSalePrice())
-        }
-        
-        item.setQuantitySold(quantity);
-    }
-
-    removeFromTotal(amount)
-    {
-        this.runningTotal -= amount;
     }
 
     getRunningTotal()
@@ -247,263 +232,180 @@ class Shop {
     swapShopInventory(buyOrSell)
     {
         this.displayedPage = buyOrSell;
-        this.activeFilter = "all";
-        this.activeItem = null;
-    }
-
-    openShop(playerInventory)
-    {
-        this.virtualPlayerInventory = Object.assign(new ShopInventory(), JSON.parse(JSON.stringify(playerInventory)));
-        this.virtualPlayerInventory.reinitializeInventory();
-        this.virtualPlayerInventory.convertItems();
-        this.virtualPlayerInventory.setQuantityForSale();
-    }
-
-    closeShop()
-    {
-        if(this.canBuy)
+        if(this.displayedPage == "buy")
         {
-            this.displayedPage = "buy";
+            this.displayedShop = this.activeShop;
+        }
+        else
+        {
+            this.displayedShop = this.virtualPlayerShop;
         }
         this.activeFilter = "all";
-        this.activeItem = null;
-        this.inventory.resetQuantitySold();
-        this.runningTotal = 0;
+        this.categoryFilter = "all";
+        this.subcategoryFilter = "all";
+        this.activeItem = new ShopItem();
+    }
+
+    setShop(shopName)
+    {
+        this.virtualPlayerShop = new Shop(JSON.parse(JSON.stringify(player.getUnsortedItems())));
+        this.virtualPlayerShop.initializeInventory();
+        this.virtualPlayerShop.setSalePrices();
+        this.virtualPlayerInventory = player.getInventory();
+        this.activeShop = Object.assign(new Shop(), JSON.parse(JSON.stringify(shops[shopName])));
+        this.activeItem = new ShopItem();
+        this.activeShop.initializeInventory();
+        if(!this.activeShop.getCanBuy())
+        {
+            this.displayedShop = this.virtualPlayerShop;
+        }
+        else
+        {
+            this.displayedShop = this.activeShop;
+        }
+    }
+
+
+    getVendorName()
+    {
+        return this.activeShop.getVendorName();
+    }
+
+    getVendorBlurb()
+    {
+        return this.activeShop.getVendorBlurb();
+    }
+
+    getActiveItem()
+    {
+        return this.activeItem;
+    }
+
+    getActiveItemId()
+    {
+        if(this.activeItem.getItem() == null)
+        {
+            return ''
+        }
+        return this.activeItem.getId();
+    }
+
+    setActiveShopItem(item)
+    {
+        this.activeItem = item;
+    }
+
+    getSubcategoryFilter()
+    {
+        return this.subcategoryFilter;
+    }
+
+    getCategoryFilter()
+    {
+        return this.categoryFilter;
     }
 }
 
-class Vendor {
-    constructor(name, blurb)
+class Shop {
+    constructor(inventory, vendor={}, type="item", canSell=true, canBuy=true)
     {
-        this.name = name;
-        this.blurb = blurb;
+        this.vendor = vendor;
+        this.inventory = inventory;
+        this.type = type;
+        this.canSell = canSell;
+        this.canBuy = canBuy;
         
     }
 
-    getName()
+    getShopReturn()
     {
-        return this.name;
+        return this.return;
     }
 
-    getBlurb()
+    initializeInventory()
     {
-        return this.blurb;
-    }
-}
-
-export class ShopInventory extends Inventory {
-    
-    constructor()
-    {
-        super();
+        this.inventory = new ShopInventory(this.inventory);
+        this.inventory.initializeInventory();
+        this.inventory.sortItems();
     }
 
-    addInventory(inventory)
-	{
-		for(let category in inventory)
+    setSalePrices()
+    {
+        this.inventory.setSalePrices();
+    }
+
+    getFilteredInventory(category, subcategory)
+    {
+        if(category == "all" || subcategory == "all")
         {
-            for(let item in inventory[category])
-            {
-                if(!this[category].hasOwnProperty(item))
-                {
-                    this[category][item] = (inventory.getItem(item, category));
-                }
-                else if(this[category][item].getQuantityForSale() !== -1 && inventory.getItem(item, category).getQuantityForSale() !== -1)
-                {
-                    this[category][item].setQuantityForSale(Math.max(this[category][item].getQuantityForSale(), inventory.getItem(item, category).getQuantityForSale())); 
-                }
-                else
-                {
-                    this[category][item].setQuantityForSale(-1);
-                }
-            }
+            return this.inventory.getAllInCategory(category)
         }
-	}
-
-    checkout()
-    {
-        for(let category in this)
-        {
-            for(let item in this[category])
-            {
-                let itemObject = this[category][item];
-                if(itemObject.getQuantityForSale() > -1 && itemObject.getQuantitySold() > 0)
-                {
-                    itemObject.removeQuantityForSale(itemObject.getQuantitySold());
-                }
-            }
-        }
-    }
-
-    resetQuantitySold()
-    {
-        for(let category in this)
-        {
-            for(let item in this[category])
-            {
-                this[category][item].setQuantitySold(0);
-            }
-        }
+        return this.inventory.getAllInSubcategory(subcategory);
     }
 
     getSoldItems()
     {
-        let soldItems = []
-        for(let category in this)
-        {
-            for(let item in this[category])
-            {
-                if(this[category][item].getQuantitySold() > 0)
-                {
-                    soldItems.push(this[category][item])
-                }
-            }
-        }
-        return soldItems;
+        return this.inventory.getSoldItems();
+    }
+    
+    resetInventory(categories)
+    {
+        this.inventory = new ShopInventory();
+        this.inventory.initializeInventory(categories)
+    }
+
+    addInventory(inventory)
+    {
+        this.inventory.addInventory(inventory);
     }
 
     areItemsAdded()
     {
-        for(let category in this)
-        {
-            for(let item in this[category])
-            {
-                if(this[category][item].getQuantitySold() > 0)
-                {
-                    return true;
-                }
-            }
-        }
+        return this.inventory.areItemsAdded();
     }
 
-    convertItems(items=null)
+    getEmptyCategories()
     {
-        for(let category in this)
-        {
-            for(let item in this[category])
-            {
-                if(items !== null)
-                {
-                    this[category][item] = Object.assign(new ShopItem(this[category][item]), items[item]);
-                }
-                else
-                {
-                    this[category][item] = new ShopItem(this[category][item]);
-                }
-            }
-        }
+        return this.inventory.getEmptyCategories();
     }
 
-    setQuantityForSale()
+    getItemCategories()
+	{
+		return this.inventory.getItemCategories();
+	}
+
+	getItemSubcategories(category)
+	{
+		return this.inventory.getItemSubcategories(category);
+	}
+
+    getCanBuy()
     {
-        for(let category in this)
-        {
-            for(let item in this[category])
-            {
-                this[category][item].setQuantityAsSaleQuantity();
-            }
-        }
+        return this.canBuy;
     }
 
-    getActiveCategories()
+    getCanSell()
     {
-        let activeCategories = [];
-        for(let category in this)
-        {
-            if(Object.keys(this[category] > 0))
-            {
-                activeCategories.push(category);
-            }
-        }
-        return activeCategories;
-    }
-}
-
-class ShopItem {
-    constructor(item)
-    {
-        this.item = item;
-        this.quantitySold = 0;
-        this.flags = [];
+        return this.canSell;
     }
 
-    isUnique()
+    getReturnTarget()
     {
-        return this.flags.includes("unique");
+        return this.return;
     }
 
-    getSubcategory()
+    getVendorName()
     {
-        return this.item.getSubcategory();
+        return this.vendor.name;
     }
 
-    getItem()
+    getVendorBlurb()
     {
-        return this.item;
+        return this.vendor.blurb;
     }
 
-    removeQuantityForSale(amount)
+    setQuantityInCart(item, quantity)
     {
-        this.quantityForSale -= amount;
-    }
-
-    setQuantityAsSaleQuantity()
-    {
-        this.quantityForSale = this.item.getQuantity();
-    }
-
-    setQuantityForSale(amount)
-    {
-        this.quantityForSale = amount;
-    }
-
-    getDescription()
-    {
-        return this.item.getDescription();
-    }
-
-    getQuantityForSale()
-    {
-        return this.quantityForSale;
-    }
-
-    getCategory()
-    {
-        return this.item.getCategory();
-    }
-
-    getSalePrice()
-    {
-        return this.item.getSalePrice();
-    }
-
-    getPrice()
-    {
-        return this.item.getPrice();
-    }
-
-    getQuantitySold()
-    {
-        return this.quantitySold;
-    }
-
-    setQuantitySold(amount)
-    {
-        this.quantitySold = amount;
-    }
-
-    getQuantity()
-    {
-        return this.item.getQuantity();
-    }
-
-    getId()
-    {
-        return this.item.getId()
-    }
-
-    getName()
-    {
-        return this.item.getName()
+        this.inventory.setQuantityInCart(item, quantity);
     }
 }

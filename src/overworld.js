@@ -29,17 +29,21 @@ export class OverworldData
 		this.activeScene.initializeScene();
 	}
 	
-	setNewScene(buttonID)
+	buttonPressed(buttonId)
 	{
-		let target = this.activeScene.getTarget(buttonID);
-		if(target.zone !== this.activeZoneID)
-		{
-			this.activeZoneID = target.zone
-			this.activeZone = this.zones[this.activeZoneID]
-		}
+		let target = this.activeScene.getTarget(buttonId);
+		this.setNewScene(target)
+	}
+
+	setNewScene(target)
+	{
+		this.activeZoneID = target.zone
+		this.activeZone = this.zones[this.activeZoneID];
 		this.activeScene = Object.assign(new Scene(), JSON.parse(JSON.stringify(this.activeZone.getScene(target.scene))));
 		this.activeScene.initializeScene();
 		this.activeSceneID = this.activeScene.getID();
+		let buttonsToAdd = overworldNPCData.getOverworldNPCButtons(this.activeZoneID, this.activeSceneID);
+		this.activeScene.addButtons(buttonsToAdd);
 	}
 
 	getButtonType(buttonID)
@@ -64,8 +68,6 @@ export class OverworldData
 
 	getButtonDock()
 	{
-		let buttonsToAdd = overworldNPCData.getOverworldNPCButtons(this.activeZoneID, this.activeSceneID);
-		this.activeScene.addButtons(buttonsToAdd);
 		return this.activeScene.getButtonDock();
 	}
 

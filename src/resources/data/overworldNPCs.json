@@ -109,8 +109,8 @@
         "blurbs": {
             "inntown": {
                 "general_store": {
-                        "description": "<p>As you come in, you see a short woman with platinum blonde hair and fox ears standing behind the counter. Hakkin looks up and smiles, her tail starting to slowly wag. She's clearly excited to see you, although you don't know if she's the same with all her customers.</p>",
-                        "button": {
+                    "description": "<p>As you come in, you see a short woman with platinum blonde hair and fox ears standing behind the counter. Hakkin looks up and smiles, her tail starting to slowly wag. She's clearly excited to see you, although you don't know if she's the same with all her customers.</p>",
+                    "button": {
                         "id": -1,
                         "name": "Hakkin",
                         "target": {

@@ -2,20 +2,21 @@ import globals from "./resources/data/globals.json"
 
 export class Wallet
 {
-	constructor(rawValue = 0, denominations = new Array(0, 0, 0, 0))
+	constructor(rawValue = 0, denominations = new Array(globals.denoms.length))
 	{
 		this.rawValue = rawValue;
 		this.denominations = denominations;
 	}
 
-	getRawValue()
+	getMoneyRaw()
 	{
 		return this.rawValue;
 	}
 
-    getProcessedMoney()
+    getMoneyDenoms()
     {
-        return this.denominations
+        this.denominations = Money.convertRawToDenoms(this.rawValue);
+		return this.denominations
     }
 
 	tester(amount)
@@ -87,9 +88,7 @@ export class Money
 	static convertRawToDenoms(amount)
 	{
 		let negative = false;
-		
 		let rawValue = amount;
-
 		if(!(rawValue instanceof Object))
 		{
 			if(rawValue < 0)
@@ -219,5 +218,20 @@ export class Money
 			convertedString = `${convertedString}, and ${lastDenomFound}`
 		}
 		return convertedString;
+	}
+
+	static formatPrice(price)
+	{
+		let startDenom = false;
+		let priceString = [];
+		for(let i = price.length - 1; i >= 0; i--)
+		{
+			if(price[i] !== 0 || startDenom)
+			{
+				priceString.push(<span key={i}>{price[i]}{globals.denomAbbrevs[i]}</span>);
+				startDenom = true;
+			}
+		}
+		return priceString;
 	}
 }

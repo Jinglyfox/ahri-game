@@ -5,18 +5,29 @@
             "blurb": "As you peruse various displays around the shop, Hakkin watches you with her head resting in one of her hands and a big smile on her face. She contentedly wags her tail, every few seconds you can see its white tip appear for a moment from below the counter. You can't help but smile as you return to shopping. As you do, you hear a soft giggle from the front desk."
         },
         "type": "item",
-        "inventoryList": {
-            "testinventoryone": {
-                "lock": {
-                    "flag": "times_seen_inntown_cell_1",
-                    "key": "under",
-                    "value": 2
-                }
+        "inventory": {
+            "medHealPot": {
+                "quantity": 1
             },
-            "testinventorytwo": {
-
+            "iron": {
+                "quantity": 100
+            },
+            "froggius":
+            {
+                "quantity": 1
+            },
+            "ironsword": {
+                "quantity": 1,
+                "price": 10000
+            },
+            "woodbow": {
+                "quantity": 20
             }
         },
-        "return": "general_store"
+        "canBuy": true,
+        "return": {
+            "scene": "general_store",
+            "zone": "inntown"
+        }
     }
 }

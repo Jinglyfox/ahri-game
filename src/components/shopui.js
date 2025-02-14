@@ -1,46 +1,117 @@
 import React from 'react';
+import { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { input, request } from "../data.js"
 
-export class ShopUI extends React.Component {
+export function ShopUI(props){
+
+    const [update, setUpdate] = useState({
+        updated: false
+    })
+    
+    function shopReturn()
+    {
+        props.shopReturn();
+    }
+
+    function updateInventory()
+    {
+        setUpdate({updated: !update.updated});
+    }
+
+    return(
+    <div id="shopWrapper">
+        <div id="shopLeft">
+            <VendorCard vendorName={request.getVendorName()} vendorBlurb={request.getVendorBlurb()} />
+            <ItemInfoCard item={request.getActiveShopItem()}/>
+        </div>
+        <div id="shopRight">
+            <ShopInventoryHeader updateInventory={updateInventory} disabledMenu={request.getDisabledMenu()} displayedPage={request.getDisplayedPage()} header={request.getShopHeader()}/>
+            <ShopInventory updateInventory={updateInventory} items={request.getShopInventory()}/>
+            <RunningTotal updateInventory={updateInventory} total={request.getRunningTotal()}/>
+            <ShopDock shopReturn={shopReturn} checkout={props.checkout} updateMoney={props.updateMoney}/>
+        </div>  
+    </div>
+    )
+  }
+
+function ShopInventoryHeader (props) {
+
+    let disabledMenu = props.disabledMenu;
+    let displayedPage = props.displayedPage
+
+    function swapInventory(buyOrSell)
+    {
+        input.swapShopInventory(buyOrSell)
+        props.updateInventory();
+    }
+
+    return(
+    <div id="shopInventoryHeader">
+        <button className={`shopDockButton ${displayedPage == 'buy' ? 'active' : ''}`} disabled={disabledMenu == "buy" ? true : false} onClick={() => swapInventory(("buy"))}>
+            <span className="buttonText">Buy</span>
+        </button>
+        <span id="shopTitle">{props.header}</span>
+        <button className={`shopDockButton ${displayedPage== 'sell' ? 'active' : ''}`} disabled={disabledMenu == "sell" ? true : false} onClick={() => swapInventory("sell")}>
+            <span className="buttonText">Sell</span>
+        </button>
+    </div>
+    )
+}
+
+  class ShopInventory extends React.Component {
+  
     constructor(props)
     {
       super(props);
-      this.state = {update: false}
-      this.updateInventory = this.updateInventory.bind(this);
-      this.shopCheckout = this.shopCheckout.bind(this);
-    }
-    
-    updateInventory()
-    {
-      this.setState({update: !this.state.update});
+      this.updateParentCategory = this.updateParentCategory.bind(this);
+      this.updateSubcategory = this.updateSubcategory.bind(this);
     }
   
-    shopCheckout()
+    updateParentCategory(category)
     {
-      this.props.checkout()
-      this.props.shopReturn();
+        input.setCategoryFilter(category)
+        this.props.updateInventory()
+    }
+  
+    updateSubcategory(subcategory)
+    {
+        input.setSubcategoryFilter(subcategory)
+        this.props.updateInventory()
+    }
+  
+    loadItems()
+    {
+        let itemCards = []
+        let activeItem = request.getActiveShopItem();
+        for(let item in this.props.items)
+        {
+            itemCards.push(<ShopItemCard active={activeItem.getId() == this.props.items[item].getId() ? 'activeItemListCard' : ''} updateInventory={this.props.updateInventory} item={this.props.items[item]} key={item} />)
+        }
+        return itemCards
     }
   
     render() {
-      return(
-        <div id="shopWrapper">
-          <div id="shopLeft">
-              <VendorCard vendor={request.getVendor()} />
-              <ItemInfoCard item={request.getActiveShopItem()}/>
-          </div>
-          <div id="shopRight">
-              <ShopInventoryHeader updateInventory={this.updateInventory} disabledMenu={request.getDisabledMenu()} header={request.getShopHeader()}/>
-              <ShopInventory updateInventory={this.updateInventory} items={request.getShopInventory()}/>
-              <RunningTotal updateInventory={this.updateInventory} total={request.getRunningTotal()}/>
-              <ShopDock shopReturn={this.props.shopReturn} checkout={this.shopCheckout}/>
+        return(
+        <div id="shopInventoryWrapper">
+          <FilterList updateInventory={this.props.updateInventory} updateFilter={this.updateParentCategory} activeFilter={request.getCategoryFilter()} filterCategories={request.getItemCategories()} />
+          <FilterList updateInventory={this.props.updateInventory} updateFilter={this.updateSubcategory} activeFilter={request.getSubcategoryFilter()} filterCategories={request.getItemSubcategories()} />
+          <div id="itemList">
+              {this.loadItems()}
           </div>
         </div>
       )
     }
   }
-  
-  class ShopDock extends React.Component {
+
+ 
+
+
+
+
+              
+
+    class ShopDock extends React.Component {
     render() {
       return(
         <div id="shopDock">
@@ -64,82 +135,16 @@ export class ShopUI extends React.Component {
     }
   }
   
-  class ShopInventoryHeader extends React.Component {
-    constructor(props)
-    {
-      super(props)
-      this.swapInventory = this.swapInventory.bind(this)
-      this.state={displayedPage: this.props.disabledMenu == "buy" ? "sell" : "buy"};
-    }
   
-    swapInventory(buyOrSell)
-    {
-      input.swapShopInventory(buyOrSell);
-      this.setState({displayedPage: buyOrSell});
-      this.props.updateInventory();
-    }
-    
-    render() {
-      return(
-        <div id="shopInventoryHeader">
-            <button className={`shopDockButton ${this.state.displayedPage == 'buy' ? 'active' : ''}`} disabled={this.props.disabledMenu == "buy" ? true : false} onClick={() => this.swapInventory(("buy"))}>
-              <span className="buttonText">Buy</span>
-            </button>
-            <span id="shopTitle">{this.props.header}</span>
-            <button className={`shopDockButton ${this.state.displayedPage == 'sell' ? 'active' : ''}`} disabled={this.props.disabledMenu == "sell" ? true : false} onClick={() => this.swapInventory("sell")}>
-              <span className="buttonText">Sell</span>
-            </button>
-        </div>
-      )
-    }
-  }
   
-  class ShopInventory extends React.Component {
   
-    constructor(props)
-    {
-      super(props);
-      this.updateParentCategory = this.updateParentCategory.bind(this);
-      this.updateSubcategory = this.updateSubcategory.bind(this);
-    }
-  
-    updateParentCategory(category)
-    {
-      input.setCategoryFilter(category)
-      this.props.updateInventory()
-    }
-  
-    updateSubcategory(subcategory)
-    {
-      input.setSubcategoryFilter(subcategory)
-      this.props.updateInventory()
-    }
-  
-    loadItems()
-    {
-      let itemCards = []
-      let activeItem = request.getActiveItemId();
-      for(let i = 0; i < this.props.items.length; i++)
-      {
-        itemCards.push(<ShopItemCard active={activeItem == this.props.items[i].getId() ? 'activeItemListCard' : ''} updateInventory={this.props.updateInventory} item={this.props.items[i]} key={i} />)
-      }
-      return itemCards
-    }
-  
-    render() {
-      return(
-        <div id="shopInventoryWrapper">
-          <FilterList updateInventory={this.props.updateInventory} updateFilter={this.updateParentCategory} activeFilter={request.getCategoryFilter()} filterCategories={request.getItemCategories()} />
-          <FilterList updateInventory={this.props.updateInventory} updateFilter={this.updateSubcategory} activeFilter={request.getSubcategoryFilter()} filterCategories={request.getFilteredSubcategories()} />
-          <div id="itemList">
-              {this.loadItems()}
-          </div>
-        </div>
-      )
-    }
-  }
   
   class Filter extends React.Component {
+    constructor(props)
+    {
+        super(props);
+    }
+    
     render() {
       if(this.props.active)
       {
@@ -161,16 +166,15 @@ export class ShopUI extends React.Component {
     constructor(props)
     {
       super(props);
-      //this.state = {filter: data.getActiveFilter()}
-      //this.updateFilter = this.updateFilter.bind(this);
+      this.state = {filter: request.getCategoryFilter()}
     }
   
     /*updateFilter(filter)
     {
-      data.setActiveFilter(filter);
+      input.setActiveFilter(filter);
       this.setState({filter: filter})
       this.props.updateInventory()
-    }*/
+    } */
 
     loadFilters()
     {
@@ -182,7 +186,7 @@ export class ShopUI extends React.Component {
       {
         if(filterCategories[i] == this.props.activeFilter)
         {
-          filterList.push(<Filter disabled={null} updateFilter={this.props.updateFilter} key={i} category={filterCategories[i]} active={true} />)
+            filterList.push(<Filter disabled={null} updateFilter={this.props.updateFilter} key={i} category={filterCategories[i]} active={true} />)
         }
         else
         { 
@@ -211,7 +215,7 @@ export class ShopUI extends React.Component {
     constructor(props)
     {
       super(props);
-      this.requestQuantity = this.requestQuantity.bind(this);
+      this.setQuantity = this.setQuantity.bind(this);
       this.setActiveItem = this.setActiveItem.bind(this);
     }
   
@@ -221,18 +225,27 @@ export class ShopUI extends React.Component {
       this.props.updateInventory();
     }
   
-    requestQuantity(request)
+    setQuantity(amount)
     {
-      let quantity = request.requestItemQuantity(this.props.item, request);
-      input.setShopItemQuantity(this.props.item, quantity);
-      this.props.updateInventory();
-      return quantity;
+        let quantity = input.setShopItemQuantity(this.props.item, amount);
+        this.props.updateInventory();
+        return quantity;
     }
   
+    addQuantity()
+    {
+
+    }
+
+    removeQuantity()
+    {
+
+    }
+
     displayStock()
     {
-      let quantityForSale = this.props.item.getQuantityForSale();
-      if(this.props.item.isUnique())
+      let quantityForSale = this.props.item.getQuantity();
+      if(this.props.item.hasFlag("unique"))
       {
         return <span className="itemCardRemaining">Unique Item</span>
       }
@@ -249,7 +262,7 @@ export class ShopUI extends React.Component {
   
     render() {
       return(
-        <div className={`itemListCard ${this.props.active} ${this.props.item.getQuantityForSale() == 0 ? "itemOutOfStock":""}`} onClick={() => this.setActiveItem()}>
+        <div className={`itemListCard ${this.props.active} ${this.props.item.getQuantity() == 0 ? "itemOutOfStock":""}`} onClick={() => this.setActiveItem()}>
           <img className="itemImg" src={`resources/pictures/${this.props.item.getSubcategory()}icon.png`} />
           <div className="itemCardText">
               <div className="cardHeader">
@@ -260,16 +273,16 @@ export class ShopUI extends React.Component {
                   <div className="underline"></div>
               </div>
               <div className="itemCardInfo">
-                  <div className="itemCardCost">{request.getItemPrice(this.props.item)}</div>
+                  <div className="itemCardCost">{this.props.item.getFormattedPrice()}</div>
                   <ItemQuantity
-                    isUnique={this.props.item.isUnique()}
-                    quantityForSale={this.props.item.getQuantityForSale()}
-                    canAdd={request.requestItemQuantity(this.props.item, this.props.item.getQuantitySold() + 1)}
-                    canRemove={request.requestItemQuantity(this.props.item, this.props.item.getQuantitySold() - 1)}
-                    itemQuantity={this.props.item.getQuantitySold()}
-                    requestQuantity={this.requestQuantity} 
-                    addQuantity={this.addQuantity} 
-                    subtractQuantity={this.subtractQuantity} 
+                    isUnique={this.props.item.hasFlag("unique")}
+                    quantityForSale={this.props.item.getQuantity()}
+                    canAdd={request.requestCanChangeQuantity(this.props.item, 1)}
+                    canRemove={request.requestCanChangeQuantity(this.props.item, -1)}
+                    itemQuantity={this.props.item.getQuantityInCart()}
+                    requestQuantity={this.setQuantity} 
+                    addQuantity={this.setQuantity} 
+                    removeQuantity={this.setQuantity} 
                     setQuantity={this.setQuantity}
                   />
               </div>
@@ -302,7 +315,7 @@ export class ShopUI extends React.Component {
         quantity *= 100;
       }
       
-      quantity = this.props.requestQuantity(this.props.itemQuantity + quantity);
+      quantity = this.props.setQuantity(this.props.itemQuantity + quantity);
       this.setState({value: quantity});
     }
   
@@ -312,15 +325,15 @@ export class ShopUI extends React.Component {
       if(/^[0-9\b]+$/.test(event.target.value) && event.target.value >= 0 && event.target.value <= 9999 || event.target.value == '')
       {
         //this.setState({value: this.props.itemQuantity});
-        let quantity = this.props.requestQuantity(Number(event.target.value));
+        let quantity = this.props.setQuantity(Number(event.target.value));
+        
         if(event.target.value === '')
         {
           this.setState({value: ''});
         }
         else
         {
-          
-          this.setState({value: quantity});
+            this.setState({value: quantity});
         }
       }
     }
@@ -340,14 +353,14 @@ export class ShopUI extends React.Component {
           <div className="itemCardUniqueItem">
             <button 
               className="itemCardBuyMore"
-              disabled={!(this.props.canAdd == this.props.itemQuantity + 1)}
+              disabled={!this.props.canAdd}
               onClick={(e) => this.quantityPress(1, e)}
             >
               <span className="buttonText">Select</span>
             </button>
             <button 
               className="itemCardBuyLess"
-              disabled={!(this.props.canRemove == this.props.itemQuantity - 1)}
+              disabled={!this.props.canRemove}
               onClick={(e) => this.quantityPress(-1, e)}
             >
               <span className="buttonText">Cancel</span>
@@ -362,7 +375,7 @@ export class ShopUI extends React.Component {
             <button 
               className="itemCardBuyLess" 
               title="Hold control to remove 10 items, shift to add 100, or both to add 1000." 
-              disabled={this.props.canRemove == this.props.itemQuantity - 1 ? false : true}
+              disabled={!this.props.canRemove}
               onClick={(e) => this.quantityPress(-1, e)}
             >
               <span className="buttonText" >-</span>
@@ -371,7 +384,7 @@ export class ShopUI extends React.Component {
             <button 
               className="itemCardBuyMore" 
               title="Hold control to add 10 items, shift to add 100, or both to add 1000." 
-              disabled={this.props.canAdd == this.props.itemQuantity + 1 ? false : true} 
+              disabled={!this.props.canAdd} 
               onClick={(e) => this.quantityPress(1, e)}
             >
               <span className="buttonText">+</span>
@@ -381,11 +394,12 @@ export class ShopUI extends React.Component {
       }
     }
   }
-  
+   
   class ItemInfoCard extends React.Component {
   
     render() {
-      if(this.props.item != null)
+
+        if(this.props.item.getId() != "")
       {
         return(
           <div id="itemInfoCard" className="cardShape active">
@@ -407,20 +421,25 @@ export class ShopUI extends React.Component {
       }
     }
   }
-  
+ 
   class VendorCard extends React.Component {
+    constructor(props)
+    {
+        super(props);
+    }
+    
     render() {
-      return (
+        return (
         <div id="vendorCard" className="cardShape">
           <div className="cardHeader">
               <div className="cardHeaderContainer">
                 <span>
-                  {this.props.vendor.getName()}
+                  {this.props.vendorName}
                 </span></div>
               <div className="underline"></div>
           </div>
           <div className="cardTextArea">
-            {this.props.vendor.getBlurb()}
+            {this.props.vendorBlurb}
           </div>
       </div>
       )
