@@ -1,21 +1,25 @@
 import zones from "./resources/data/zones.json"
 import { OverworldNPCData } from "./overworldNPC";
+import { Gate } from "./gate";
+import { player } from "./player";
+import { FlagSetter } from "./flagsetter";
+
 
 let overworldNPCData = new OverworldNPCData();
 
-export class OverworldData
+class OverworldData
 {
-    constructor(activeZoneID, activeSceneID)
+    constructor(activeZoneId, activeSceneId)
     {
-        this.activeZoneID = activeZoneID;
-		this.activeSceneID = activeSceneID;
+        this.activeZoneId = activeZoneId;
+		this.activeSceneId = activeSceneId;
 		this.zones = {};
     }
 
 	initializeZones()
 	{
-		this.activeZoneID = "inntown"
-		this.activeSceneID = "inn_entrance"
+		this.activeZoneId = "inntown"
+		this.activeSceneId = "inn_entrance"
 
 		overworldNPCData.initializeOverworldNPCs();
 
@@ -24,11 +28,19 @@ export class OverworldData
 			this.zones[zone] = new Zone(zone, zones[zone]);
 			this.zones[zone].initializeZone(overworldNPCList);
 		}
-		this.activeZone = this.zones[this.activeZoneID];
-		this.activeScene = Object.assign(new Scene(), JSON.parse(JSON.stringify(this.activeZone.getScene(this.activeSceneID))));
-		this.activeScene.initializeScene();
+		this.setNewScene({zone: this.activeZoneId, scene: this.activeSceneId});
 	}
 	
+	saveGame()
+	{
+		return {activeZoneId: this.activeZoneId, activeSceneId: this.activeSceneId}
+	}
+
+	loadGame(saveFile)
+	{
+		this.setNewScene({zone: saveFile.activeZoneId, scene: saveFile.activeSceneId});
+	}
+
 	buttonPressed(buttonId)
 	{
 		let target = this.activeScene.getTarget(buttonId);
@@ -37,13 +49,18 @@ export class OverworldData
 
 	setNewScene(target)
 	{
-		this.activeZoneID = target.zone
-		this.activeZone = this.zones[this.activeZoneID];
+		this.activeZoneId = target.zone
+		this.activeZone = this.zones[this.activeZoneId];
 		this.activeScene = Object.assign(new Scene(), JSON.parse(JSON.stringify(this.activeZone.getScene(target.scene))));
 		this.activeScene.initializeScene();
-		this.activeSceneID = this.activeScene.getID();
-		let buttonsToAdd = overworldNPCData.getOverworldNPCButtons(this.activeZoneID, this.activeSceneID);
+		this.activeSceneId = this.activeScene.getID();
+		let buttonsToAdd = overworldNPCData.getOverworldNPCButtons(this.activeZoneId, this.activeSceneId);
 		this.activeScene.addButtons(buttonsToAdd);
+		this.activeScene.checkLocks();
+		if(!player.hasSeenScene(this.activeSceneId))
+		{
+			player.seenScene(this.activeSceneId)
+		}
 	}
 
 	getButtonType(buttonID)
@@ -74,7 +91,7 @@ export class OverworldData
 	getDisplayText()
 	{
 		let displayText = this.activeScene.getDisplayText();
-		let overworldNPCBlurbs = overworldNPCData.getBlurbs(this.activeZoneID, this.activeSceneID)
+		let overworldNPCBlurbs = overworldNPCData.getBlurbs(this.activeZoneId, this.activeSceneId)
 		return displayText + overworldNPCBlurbs;
 	}
 	
@@ -124,15 +141,40 @@ class Scene
 		this.type = type;
 		this.description = description;
 		this.buttons = buttons;
-		this.injectors = new Array();
-		this.activeButtons = new Array();
 		this.buttonDock = new Array();
 		this.timeCost = null;
+		this.setFlags = [];
+		this.sceneActions = [];
+	}
+
+	checkLocks()
+	{
+		for(let button in this.buttonDock)
+		{
+			this.buttonDock[button].checkLock();
+		}
 	}
 
 	initializeScene()
 	{
 		this.buildButtons();
+		this.processSceneActions();
+		this.processFlags();
+	}
+
+	processSceneActions()
+	{
+		for(let i = 0; i < this.sceneActions.length; i++)
+		{
+			this.sceneActions[i] = Object.assign(new SceneAction(), this.sceneActions[i]);
+			this.sceneActions[i].performAction();
+		}
+	}
+
+	processFlags()
+	{
+		let flagSetter = new FlagSetter(this.setFlags)
+		flagSetter.setFlags();
 	}
 
 	getButtonDock()
@@ -211,19 +253,50 @@ class Scene
 	}
 }
 
+class SceneAction
+{
+	constructor()
+	{
+		this.action = "";
+		this.gate = {};
+	}
+
+	performAction()
+	{
+		this.gate = Object.assign(new Gate(), this.gate);
+		if(this.gate.checkLock())
+		{
+			switch(this.action)
+			{
+				case "add_item":
+					player.addItems(this.items);
+					break;
+			}
+		}
+	}
+}
+
 class DockButton
 {
-	constructor(id = -1, name = "", target = null, condition = null)
+	constructor(id = -1, name = "", target = null)
 	{
         this.id = id;
 		this.name = name;
 		this.target = target;
-		//this should be cleaned up and changed into just flags. the code in general here is pretty wtf
-		this.condition = condition;
 		this.disabled = false;
-		this.removed = false;
-		this.timeCost = null;
-		this.timeAvailable = null;
+	}
+
+	checkLock()
+	{
+		if(this.hasOwnProperty("gate"))
+		{
+			this.gate = Object.assign(new Gate(), this.gate);
+			this.gate.setLock();
+			if(!this.gate.checkLock())
+			{
+				this.disabled = true;
+			}
+		}
 	}
 
 	getSceneTarget()
@@ -241,3 +314,5 @@ class DockButton
 		return this.type;
 	}
 }
+
+export var overworldData = new OverworldData();

@@ -1,5 +1,6 @@
 {
     "hakkin_shop": {
+        "shopId": "hakkin_shop",
         "vendor": {
             "name": "Hakkin",
             "blurb": "As you peruse various displays around the shop, Hakkin watches you with her head resting in one of her hands and a big smile on her face. She contentedly wags her tail, every few seconds you can see its white tip appear for a moment from below the counter. You can't help but smile as you return to shopping. As you do, you hear a soft giggle from the front desk."
@@ -7,14 +8,16 @@
         "type": "item",
         "inventory": {
             "medHealPot": {
-                "quantity": 1
+                "quantity": 0,
+                "flags": ["unlimited"]
             },
             "iron": {
                 "quantity": 100
             },
             "froggius":
             {
-                "quantity": 1
+                "quantity": 1,
+                "flags": ["unique"]
             },
             "ironsword": {
                 "quantity": 1,
@@ -22,6 +25,19 @@
             },
             "woodbow": {
                 "quantity": 20
+            },
+            "ironbow": {
+                "quantity": 324
+            },
+            "nipple armor": {
+                "quantity": 244
+            },
+            "medHealPot2": {
+                "quantity": 0,
+                "flags": ["unlimited"]
+            },
+            "medHealPot3": {
+                "quantity": 19
             }
         },
         "canBuy": true,

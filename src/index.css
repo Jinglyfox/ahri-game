@@ -80,13 +80,13 @@ body {
 
 #gameArea {
 	height: 100%;
+	flex:1;
 	background-color: var(--gameAreaBackground);
 }
 
 .overworld {
 	display: flex;
 	flex-direction: column;
-	flex: 1;
 }
 
 /* END GAME AREA */
@@ -116,14 +116,16 @@ body {
 
 /* VENDOR CSS */
 
-#shopWrapper {
+
+.shopWrapper {
 	display: flex;
 	width: 100%;
-	height: 95%;
-	margin-top: 1em;
-	gap: 1.2em;
+	height: 97%;
+	margin-top: 0.5em;
+	margin-bottom: 1em;
+	gap: 0.2em;
 }
-
+/* deprecated atm, keeping in case I change my mind.
 #shopLeft {
 	position: relative;
 	display: flex;
@@ -143,7 +145,16 @@ body {
 	width: 50%;
 	height: 100%;
 }
+*/
 
+#gameAreaHalf {
+	display: flex;
+	gap: 0.5em;
+	justify-content: space-between;
+	flex-direction: column;
+	width: 50%;
+	height: 100%;
+}
 
 
 /* CARD CSS (item info card, vendor card, etc) */
@@ -182,16 +193,16 @@ body {
 }
 
 
-#vendorCard {
+.vendorCard {
 	min-height: 25%;
 }
 
-#itemInfoCard {
+.itemInfoCard {
 	flex: 1;
 	margin-bottom: 0;
 }
 
-#itemInfoCard .disabled {
+.itemInfoCard.disabled {
 	opacity: 0.4;
 }
 
@@ -205,14 +216,14 @@ body {
 /* END CARD CSS */
 
 /* SHOP INVENTORY HEADER */
-#shopInventoryHeader {
+#shopHeader {
 	display: flex;
 	margin: 0 1% 0 1%;
 	height: 5%;
 	justify-content: space-between;
 }
 
-#shopTitle {
+#inventoryHeader {
 	background: var(--menuColorA);
 	width: 50%;
 	font-family: fantasy;
@@ -223,12 +234,13 @@ body {
 	margin: 0 1% 0 1%;
 	align-self: center;
 	text-align: center;
+	flex:1;
 }
 
 .shopDockButton {
 	border-radius: 0.5em;
 	font: inherit;
-	flex: 1;
+	flex-grow: 0.4;
 }
 /* END SHOP INVENTORY HEADER */
 
@@ -278,6 +290,7 @@ body {
 .activeFilter img {
 	height: 1.5em;
 	width: 1.5em;
+	transition: 0.1s;
 }
 
 
@@ -286,7 +299,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	padding: 0.375em;
-	height: 80%;
+	height: 77%;
 	margin: 0 1% 0 1%;
 	border-radius: 0.5em;
 }
@@ -295,7 +308,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	flex: 1;
-	gap: 1em;
+	gap: 0.5em;
 	padding-top: 0.2em;
 	padding-bottom: 0.5em;
 	overflow-y: auto;
@@ -319,11 +332,11 @@ body {
 	opacity: 0.4;
 }
 
-.itemListCard {
+#itemList .itemListCard {
 	display: flex;
+	flex-direction: row;
 	border-radius: 0.5em;
-	margin-left: 0.1em;
-	margin-right: 0.2em;
+	margin: 0 0.2em 0 0.1em;
 	padding: 0.3em;
 	gap: 0.5em;
 }
@@ -380,7 +393,7 @@ body {
 	grid-template-columns: 1fr 1fr;
 }
 
-.itemCardBuyLess, .itemCardBuyMore {
+.itemCardQuantityChange {
 	border-radius: 0.1em;
 	height: auto;
 }
@@ -576,7 +589,7 @@ button.active:disabled {
 	opacity: 1;
 }
 
-button:disabled, #itemInfoCard.disabled {
+button:disabled {
 	box-shadow: 0 0 0 0 black;
 	opacity: 0.4;
 }

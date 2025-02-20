@@ -23,8 +23,9 @@ export class ShopData {
     checkout()
     {
         player.soldItems(this.virtualPlayerShop.getSoldItems());
-        player.boughtItems(this.activeShop.getSoldItems());
-        player.addMoney(-this.runningTotal);
+        player.boughtItems(this.activeShop);
+        player.removeMoney(this.runningTotal);
+        this.activeShop.removeSoldItems();
     }
 
     areItemsAdded()
@@ -66,7 +67,7 @@ export class ShopData {
         let quantityInCart = item.getQuantityInCart();
         if(player.canAfford(runningTotal + itemPrice * quantity))
         {
-            if(quantityInCart + quantity > item.getQuantity())
+            if(quantityInCart + quantity > item.getQuantity() && !item.hasFlag("unlimited"))
             {
                 return false;
             }
@@ -115,7 +116,7 @@ export class ShopData {
         //if the player can afford the quantity
         if(player.canAfford(runningTotal + itemPrice * (quantity - quantityInCart)))
         {
-            if(quantity <= item.getQuantity())
+            if(quantity <= item.getQuantity() || item.hasFlag("unlimited"))
             {
                 if(quantity > 9999)
                 {
@@ -135,7 +136,7 @@ export class ShopData {
         else
         {
             maxAmountCanAfford = Math.floor((player.getMoneyRaw() - runningTotal)/Math.abs(itemPrice)) + quantityInCart;
-            if(maxAmountCanAfford > item.getQuantity())
+            if(maxAmountCanAfford > item.getQuantity() && !item.hasFlag("unlimited"))
             {
                 maxAmountCanAfford = item.getQuantity();
             }
@@ -253,8 +254,14 @@ export class ShopData {
         this.virtualPlayerShop.setSalePrices();
         this.virtualPlayerInventory = player.getInventory();
         this.activeShop = Object.assign(new Shop(), JSON.parse(JSON.stringify(shops[shopName])));
-        this.activeItem = new ShopItem();
+        
+        if(player.checkPurchasedFromShop(shopName))
+        {
+            this.activeShop.setInventory(player.getVisitedShopInventory(shopName));
+        }
+        console.log(this.activeShop);
         this.activeShop.initializeInventory();
+
         if(!this.activeShop.getCanBuy())
         {
             this.displayedShop = this.virtualPlayerShop;
@@ -263,6 +270,7 @@ export class ShopData {
         {
             this.displayedShop = this.activeShop;
         }
+        this.activeItem = new ShopItem();
     }
 
 
@@ -307,9 +315,10 @@ export class ShopData {
 }
 
 class Shop {
-    constructor(inventory, vendor={}, type="item", canSell=true, canBuy=true)
+    constructor(inventory, shopId ="", vendor={}, type="item", canSell=true, canBuy=true)
     {
         this.vendor = vendor;
+        this.shopId = shopId;
         this.inventory = inventory;
         this.type = type;
         this.canSell = canSell;
@@ -317,6 +326,11 @@ class Shop {
         
     }
 
+    getShopId()
+    {
+        return this.shopId;
+    }
+    
     getShopReturn()
     {
         return this.return;
@@ -348,10 +362,14 @@ class Shop {
         return this.inventory.getSoldItems();
     }
     
-    resetInventory(categories)
+    removeSoldItems()
     {
-        this.inventory = new ShopInventory();
-        this.inventory.initializeInventory(categories)
+        this.inventory.removeSoldItems();
+    }
+
+    setInventory(inventory)
+    {
+        this.inventory = inventory;
     }
 
     addInventory(inventory)

@@ -7,6 +7,18 @@
             "description": "You stand in the heart of the little community that has formed around the crossroads. To your north you see your inn, a beaten up but sturdy building with two floors. You can see where master bedroom is, a small projection from the main building on the first floor. You know it's probably not empty at this time of day; Akiyo takes a while to get herself ready in the morning. Something to do with 'all these stupid tails needing grooming,' last you checked.<p>To your south, you see the little building that houses Hakkin's general store. You're always struck by how it seems way bigger on the inisde. At this time of day, there's a good amount of business from people either stocking up on small things like rations for the road or supplies to repair broken wheels.",
             "injectors": [],
             "characters" : [],
+            "setFlags": [
+                {
+                    "action": "set",
+                    "flag": "test_flag",
+                    "value": "gadoink"
+                },
+                {
+                    "action": "increment",
+                    "flag": "test_flag_increment",
+                    "value": -1
+                }
+            ],
             "buttons": [
                 {
                     "id": 0,
@@ -14,6 +26,13 @@
                     "target": {
                         "scene": "inn_entrance",
                         "zone": "playerinn"
+                    },
+                    "gate": {
+                        "lock": {
+                            "type": "flag",
+                            "flag": "player_seen_general_store",
+                            "key": true
+                        }
                     },
                     "type": "overworld"
                 },
@@ -62,6 +81,14 @@
                         "zone": "inntown"
                     },
                     "type": "overworld"
+                },
+                {
+                    "id": 3,
+                    "name": "Inventory",
+                    "target": {
+                        "inventory": "playerInventory"
+                    },
+                    "type": "inventory"
                 }
             ]
         },
@@ -69,8 +96,6 @@
             "id": "inntown_cell_2",
             "type": "overworld",
             "description": "The road bends here, curving north towards the frostlands. It will split another few times but none of the roads end up being quite as busy as this one. This is the only place where the path between all three capitals meet.",
-            "injectors": [],
-            "characters" : [],
             "buttons": [
                 {
                     "id": 6,
@@ -106,6 +131,13 @@
                         "scene": "inntown_cell_2",
                         "zone": "inntown"
                     },
+                    "gate": {
+                        "lock": {
+                            "type": "under",
+                            "flag": "test_flag_increment",
+                            "key": -1
+                        }
+                    },
                     "type": "overworld"
                 },
                 {
@@ -132,8 +164,26 @@
                     "target": {
                         "scene": "inn_entrance",
                         "zone": "inntown"
-                    },
+                    },                    
                     "type": "overworld"
+                }
+            ],
+            "sceneActions": [
+                {
+                    "action": "add_item",
+                    "gate": {
+                        "lock": {
+                            "type": "flag",
+                            "flag": "player_seen_inntown_cell_1",
+                            "key": true
+                        }
+                    },
+                    "items": [
+                        {
+                            "item": "woodbow",
+                            "quantity": 3
+                        }
+                    ]
                 }
             ]
         },

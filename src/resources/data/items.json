@@ -19,6 +19,24 @@
             "description": "really?",
             "priceRaw": 10000000,
             "sellable": true
+        },
+        "medHealPot2": {
+            "id": "medHealPot2",
+            "name": "medium potion of healing 2",
+            "category": "consumable",
+            "subcategory": "potion",
+            "description": "really?",
+            "priceRaw": 10000000,
+            "sellable": true
+        },
+        "medHealPot3": {
+            "id": "medHealPot3",
+            "name": "medium potion of healing 3",
+            "category": "consumable",
+            "subcategory": "potion",
+            "description": "really?",
+            "priceRaw": 10000000,
+            "sellable": true
         }
     },
     "resource": {

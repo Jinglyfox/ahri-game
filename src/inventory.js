@@ -91,7 +91,7 @@ export class Inventory
 	{
 		for(let item in this.itemsUnsorted)
 		{
-            if(this.itemsUnsorted[item].getQuantity() > 0) 
+            if(this.itemsUnsorted[item].getQuantity() > 0 || this.itemsUnsorted[item].hasFlag("unlimited")) 
             {
                 return false;
             }
@@ -126,11 +126,19 @@ export class Inventory
                 {
                     let itemObject = Object.assign(new Item(), items[category][item]);
                     this.itemsUnsorted[item] = new InventoryItem(itemObject, 0)
+                    break;
                 }
             }
 		}
-		this.itemsUnsorted[item].addQuantity(quantity);
-        this.sortItems();
+        if(!this.itemsUnsorted.hasOwnProperty(item))
+        {
+            Error("Attempted to add item to inventory that does not exist.\nItem Name: " + item);
+        }
+        else
+        {
+            this.itemsUnsorted[item].addQuantity(quantity);
+            this.sortItems();
+        }
 	}
 
     removeItem(item, quantity = 1)
@@ -188,11 +196,28 @@ export class ShopInventory extends Inventory
         super(itemsUnsorted)
 	}
 
+    setBoughtItems(items)
+    {
+        for(let item in items)
+        {
+            this.itemsUnsorted[items[item].getId()].subtractQuantity(items[item].getQuantityInCart())
+        }
+    }
+
     setSalePrices()
     {
         for(let item in this.itemsUnsorted)
         {
             this.itemsUnsorted[item].setSalePrice();
+        }
+    }
+
+    removeSoldItems()
+    {
+        for(let item in this.itemsUnsorted)
+        {
+            this.itemsUnsorted[item].subtractQuantity(this.itemsUnsorted[item].getQuantityInCart())
+            this.itemsUnsorted[item].setQuantityInCart(0);
         }
     }
 
@@ -206,7 +231,8 @@ export class ShopInventory extends Inventory
                 {
                     let itemObject = Object.assign(new Item(), items[category][item]);
                     let quantity = this.itemsUnsorted[item].quantity;
-                    this.itemsUnsorted[item] = new ShopItem(itemObject, quantity, 0);
+                    let flags = this.itemsUnsorted[item].flags
+                    this.itemsUnsorted[item] = new ShopItem(itemObject, quantity, flags);
                     this.itemsUnsorted[item].setPrice();
                 }
             }
@@ -246,10 +272,11 @@ export class ShopInventory extends Inventory
 
 export class InventoryItem
 {
-    constructor(item = null, quantity = 0)
+    constructor(item = null, quantity = 0, flags = [])
     {
         this.item = item;
         this.quantity = quantity;
+        this.flags = flags;
     }
 
     addQuantity(quantity)
@@ -272,6 +299,11 @@ export class InventoryItem
     }
 
     hasFlag(flag)
+    {
+        return this.flags.includes(flag);
+    }
+
+    getItemFlag(flag)
     {
         return this.item.hasFlag(flag);
     }
@@ -319,9 +351,9 @@ export class InventoryItem
 
 export class ShopItem extends InventoryItem 
 {
-    constructor(item = null, quantity = 0, quantityInCart = 0, price = 0)
+    constructor(item = null, quantity = 0, flags= [], quantityInCart = 0, price = 0)
     {
-        super(item, quantity);
+        super(item, quantity, flags);
         this.quantityInCart = quantityInCart;
         this.price = price;
     }

@@ -1,13 +1,10 @@
 
 import globals from "./resources/data/globals.json"
-import inventories from "./resources/data/inventories.json"
-import { OverworldData } from "./overworld"
-import { Wallet, Money } from "./money"
+import { overworldData } from "./overworld"
 import { player } from "./player"
-import { ShopData, ShopInventory } from "./shop"
-import {ItemData } from "./items"
+import { ShopData } from "./shop"
+import { ItemData } from "./items"
 
-let overworldData = new OverworldData();
 let shopData;
 let itemData = new ItemData();
 let uiToRender = "overworld";
@@ -28,7 +25,6 @@ class Request
 	{
 		overworldData.initializeZones();
 		itemData.initializeDictionary();
-		player.addItem("woodbow")
 	}
 
 	getDenomNames()
@@ -134,21 +130,37 @@ class Input
 
 	}
 
-	buttonPress(buttonID)
+	buttonPress(buttonId)
 	{
-		let buttonType = overworldData.getButtonType(buttonID);
+		let buttonType = overworldData.getButtonType(buttonId);
 		switch(buttonType)
 		{
 			case "overworld":
 				uiToRender = "overworld";
-				overworldData.buttonPressed(buttonID);
+				overworldData.buttonPressed(buttonId);
 				break;
 			case "shop":
 				uiToRender = "shop";
 				shopData = new ShopData();
-				shopData.setShop(overworldData.getSceneTarget(buttonID));
+				shopData.setShop(overworldData.getSceneTarget(buttonId));
 				break;
+			case "inventory":
+				
+			default:
+				Error(`Button Id ${buttonId} returned type ${buttonType} which is not a valid type.`)
 		}
+	}
+
+	saveGame()
+	{
+		localStorage.setItem("foo", JSON.stringify({...overworldData.saveGame(), ...player.saveGame()}));
+	}
+
+	loadGame()
+	{
+		let saveFile = JSON.parse(localStorage.getItem("foo"));
+		player.loadGame(saveFile);
+		overworldData.loadGame(saveFile);
 	}
 
 	shopReturn()

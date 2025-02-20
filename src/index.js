@@ -2,29 +2,49 @@ import React from 'react';
 import { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { input, request } from "./data.js"
-import { ShopUI } from "./components/shopui.js"
+import { ShopUI } from './components/pages/ShopUI.js';
+import { BlankUI } from './components/pages/BlankUI.js';
+import { OverworldUI } from './components/pages/OverworldUI.js';
 import './index.css';
 
 
 function Game() {
 
   const [gameState, setGameState] = useState({
-    gameStarted: false
+    gameUpdated: false,
+    gameLoaded: false
   })
 
   const [money, setMoney] = useState({
     moneyUpdated: []
   })
 
+  const [ui, setUi] = useState({
+    uiToRender: "blank"
+  });
+
+  function updateGame()
+  {
+    setGameState({
+      gameUpdated: !gameState.gameUpdated
+    });
+    setUi({
+      uiToRender: request.getUiToRender()
+    });
+    setMoney({
+      moneyUpdated: request.getPlayerWalletDenoms()
+    });
+  }
+
   function startGame()
   {
     request.initializeData();
-    setGameState({
-      gameStarted:true
+    setUi({
+      uiToRender: "overworld"
     })
     updateMoney();
   }
-  
+
   function updateMoney()
   {
     setMoney({
@@ -32,22 +52,47 @@ function Game() {
     })
   }
 
+  function saveGame()
+  {
+    input.saveGame();
+  }
+
   function loadGame()
   {
-    console.log("poop");
+    input.loadGame();
+    updateMoney();
+    setGameState({
+      gameStarted: true,
+      gameLoaded: !gameState.gameLoaded
+    })
   }
  
-  return (
-     
+  function setUI()
+  {
+    console.log("hello1");
+    switch(ui.uiToRender)
+    {
+      case "blank":
+        return <BlankUI startGame={startGame}/>
+      case "overworld":
+        return <OverworldUI updateGame={updateGame} />
+      case "shop":
+        return <ShopUI updateGame={updateGame}/>
+    }
+  }
+
+  return(
     <div id="gameWrapper">
       <MenuBar updateMoney={updateMoney} startGame={startGame} values={money.moneyUpdated}/> 
-      <GameArea updateMoney={updateMoney} gameStarted={gameState.gameStarted} />
+      {setUI()}
       <div className ="sidebar" id="sidebarRight">
-        <button><span>Save</span></button>
+        <button onClick={() => saveGame()}><span>Save</span></button>
         <button onClick={() => loadGame()}><span>Load</span></button>
       </div>
     </div>
   )
+
+  
   
 }
 
@@ -65,119 +110,6 @@ function MenuBar(props) {
         <MoneyBar denominations={request.getDenomNames()} updateMoney={props.updateMoney} values={values}/>
         <div><button onClick={() => updateShops()}>Update Shops</button></div>
     </div>		
-  )
-}
-
-function GameArea(props) {
-    //this.state = {uiToRender: request.getUiToRender()}
-    //this.buttonHandler = this.buttonHandler.bind(this);
-
-  
-  const [ui, setUi] = useState({
-    uiToRender: "overworld"
-  });
-
-  function buttonHandler(buttonID)
-  {
-    input.buttonPress(buttonID);
-    setUi({
-      uiToRender: request.getUiToRender()
-    });
-  }
-
-  function checkout()
-  {
-    input.shopCheckout();
-    props.updateMoney();
-    shopReturn();
-  }
-
-  function shopReturn()
-  {
-    input.shopReturn();
-    setUi({
-      uiToRender: request.getUiToRender()
-    });
-  }
-
-  if(props.gameStarted)
-  {
-    if(ui.uiToRender == "overworld")
-      {
-        
-        return (
-          <div id ="gameArea" className="overworld">
-              <div id="textWrapper">
-                <TextArea buttonHandler={buttonHandler} displayText={request.getDisplayText()} />
-              </div>
-              <ButtonDock buttonHandler={buttonHandler} buttonDock={request.getButtonDock()} />
-          </div>
-        )
-      }
-      else if(ui.uiToRender == "shop")
-      {
-        return (
-          <div id ="gameArea" className="overworld">
-              <ShopUI buttonHandler={buttonHandler} shopReturn={shopReturn} checkout={checkout}/>
-          </div>
-        )
-      }
-  }
-  
- }
-
-
-function ButtonDock (props) {
-    
-  function buildRows()
-  {
-    let buttonRows = []
-    let buttonSet = [];
-    for(let i = 0; i < 15; i++)
-    {
-        buttonSet.push(<DockButton id = {i} name={props.buttonDock[i].name} disabled={props.buttonDock[i].disabled} key={i} buttonHandler={props.buttonHandler} />)
-        if((i + 1) % 5 === 0)
-        {
-          buttonRows.push(<div className="buttonRow" key={`buttonRow${i}`}>{buttonSet}</div>)
-          buttonSet = [];
-        }
-    }
-    return buttonRows;
-  }
-
-    return (
-      <div id = "buttonDock">
-        {buildRows()}
-      </div>
-    )
-}
-
-function DockButton(props) {
-  let id = props.id;
-  let name = props.name;
-  let disabled = props.disabled;
-
-  return (
-    <button 
-      id={"button" + id} 
-      onClick = {() => props.buttonHandler(id)} 
-      disabled={disabled}
-    >
-      <span>
-        {name}
-      </span>
-    </button>
-  )
-}
-
-function TextArea(props) {
-  const displayText = props.displayText;
-  return (
-    <div 
-      id="textArea"
-      dangerouslySetInnerHTML={{__html: displayText}}
-    >
-    </div>
   )
 }
 
