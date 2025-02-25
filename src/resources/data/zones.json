@@ -28,11 +28,16 @@
                         "zone": "playerinn"
                     },
                     "gate": {
-                        "lock": {
-                            "type": "flag",
-                            "flag": "player_seen_general_store",
-                            "key": true
-                        }
+                        "locks": [
+                            {
+                                "type": "flag",
+                                "flag": "player_seen_general_store",
+                                "key": {
+                                    "check": "equal",
+                                    "value": true
+                                }
+                            }
+                        ]
                     },
                     "type": "overworld"
                 },
@@ -62,7 +67,19 @@
                         "scene": "inntown_crossroad",
                         "zone": "inntown"
                     },
-                    "type": "overworld"
+                    "type": "overworld",
+                    "gate": {
+                        "locks": [
+                            {
+                                "type": "item",
+                                "flag": "nipple armor",
+                                "key": {
+                                    "check": "equal",
+                                    "value": 0
+                                }
+                            }
+                        ]
+                    }
                 }
             ]
         },
@@ -86,9 +103,9 @@
                     "id": 3,
                     "name": "Inventory",
                     "target": {
-                        "inventory": "playerInventory"
+                        "scene": "playerInventory"
                     },
-                    "type": "inventory"
+                    "type": "player_inventory"
                 }
             ]
         },
@@ -131,14 +148,10 @@
                         "scene": "inntown_cell_2",
                         "zone": "inntown"
                     },
-                    "gate": {
-                        "lock": {
-                            "type": "under",
-                            "flag": "test_flag_increment",
-                            "key": -1
-                        }
-                    },
-                    "type": "overworld"
+                    "type": "overworld",
+                    "actionCost": {
+                        "time": 1
+                    }
                 },
                 {
                     "id": 12,
@@ -148,6 +161,15 @@
                         "zone": "inntown"
                     },
                     "type": "overworld"
+                },
+                {
+                    "id": 4,
+                    "name": "Sleep",
+                    "target": {
+                        "scene": "inn_entrance",
+                        "zone": "inntown"
+                    },
+                    "type": "sleep"
                 }
             ]
         },
@@ -172,11 +194,16 @@
                 {
                     "action": "add_item",
                     "gate": {
-                        "lock": {
-                            "type": "flag",
-                            "flag": "player_seen_inntown_cell_1",
-                            "key": true
-                        }
+                        "locks": [
+                                {
+                                "type": "flag",
+                                "flag": "player_seen_inntown_cell_1",
+                                "key": {
+                                    "check": "equal",
+                                    "value": true
+                                }
+                            }
+                        ]
                     },
                     "items": [
                         {
@@ -203,7 +230,57 @@
                     },
                     "type": "overworld"
                 }
+            ],
+            "sceneActions": [
+                {
+                    "action": "add_stat",
+                    "gate": {
+                        "locks": [
+                            {
+                                "type": "flag",
+                                "flag": "player_seen_inntown_cell_1",
+                                "key": {
+                                    "check": "equal",
+                                    "value": true
+                                }
+                            }
+                        ]
+                    },
+                    "stats": [
+                        {
+                            "stat": "charm",
+                            "value": 2
+                        }
+                    ]
+                }
             ]
+        },
+        "test_event_1_scene":{
+            "id": "test_event_1_scene",
+            "type": "overworld",
+            "description": "HELLO YOU HAVE REACHED IT THE TEST EVENT 1!!!!!",
+            "buttons": [
+                {
+                    "id": 6,
+                    "name": "BASFDAF",
+                    "target": {
+                        "scene": "inn_entrance",
+                        "zone": "playerinn"
+                    },
+                    "type": "overworld"
+                }
+            ],
+            "sceneActions": [
+                {
+                    "action": "set_flag",
+                    "flags": {
+                        "seen_badoinkers" : {
+                            "value": true
+                        }
+                    }
+                }
+            ],
+            "flags": ["set_event_lockout"]
         }
     },
     "playerinn": {
@@ -230,6 +307,33 @@
                     "type": "overworld"
                 }
             ]
+        },
+        "test_event_2_scene":{
+            "id": "test_event_2_scene",
+            "type": "overworld",
+            "description": "HELLO YOU HAVE REACHED IT THE TEST EVENT 2!!!!!",
+            "buttons": [
+                {
+                    "id": 6,
+                    "name": "BASFDAF",
+                    "target": {
+                        "scene": "inn_entrance",
+                        "zone": "inntown"
+                    },
+                    "type": "overworld"
+                }
+            ],
+            "sceneActions": [
+                {
+                    "action": "set_flag",
+                    "flags": {
+                        "seen_badoinkers" : {
+                            "value": true
+                        }
+                    }
+                }
+            ],
+            "flags": ["set_event_lockout"]
         }
     }
 }

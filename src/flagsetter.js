@@ -1,4 +1,4 @@
-import { player } from "./player";
+import { gameDataAPI } from "./GameData";
 
 export class FlagSetter
 {
@@ -14,10 +14,10 @@ export class FlagSetter
             switch(this.flags[i].action)
             {
                 case "set":
-                    player.setFlag(this.flags[i].flag, this.flags[i].value);
+                    gameDataAPI.setFlag(this.flags[i].flag, this.flags[i].value);
                     break;
                 case "increment":
-                    player.incrementFlag(this.flags[i].flag, this.flags[i].value);
+                    gameDataAPI.incrementFlag(this.flags[i].flag, this.flags[i].value);
             }
         }
     }

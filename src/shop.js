@@ -1,115 +1,117 @@
-import { ShopInventory, ShopItem } from "./inventory"
+import { ShopInventoryDisplay } from "./InventoryDisplay";
 import { Money } from "./money"
 import shops from "./resources/data/shops.json"
 import { player } from "./player";
+import { overworldAPI } from "./overworld";
 import globals from "./resources/data/globals.json"
+import { gameDataAPI } from "./GameData";
 
-export class ShopData {
+// The index of the shop and player inventories in the inventories array in the swappable inventory display.
+
+
+class ShopAPI {
     constructor()
     {
         this.activeShop = {};
-        this.activeItem = new ShopItem();
         this.runningTotal = 0;
-        this.categoryFilter = "all";
-        this.subcategoryFilter = "all";
-        this.displayedPage = "buy";
+        this.swappableDisplay = new ShopInventoryDisplay()
     }
 
-    getShopReturn()
+    getActiveItem()
     {
-        return this.activeShop.getShopReturn();
+        return this.swappableDisplay.getActiveItem();
+    }
+
+    swapShopInventory(buyOrSell)
+    {
+        this.swappableDisplay.swapInventory(buyOrSell);
     }
 
     checkout()
     {
-        player.soldItems(this.virtualPlayerShop.getSoldItems());
-        player.boughtItems(this.activeShop);
+        player.soldItems(this.swappableDisplay.getSoldItems());
+        player.boughtItems(this.swappableDisplay.getBoughtItems());
         player.removeMoney(this.runningTotal);
-        this.activeShop.removeSoldItems();
+        this.runningTotal = 0;
+        this.swappableDisplay.checkout(this.activeShop.getShopId());
+    }
+
+    shopReturn()
+    {
+        this.runningTotal = 0;
+        overworldAPI.menuClosed();
     }
 
     areItemsAdded()
     {
-        if(this.activeShop.areItemsAdded() || this.virtualPlayerShop.areItemsAdded())
-        {
-            return true;
-        }
-        return false;
+        return this.swappableDisplay.areItemsAdded();
     }
 
-    getItemSubcategories()
+    setActiveItem(item)
     {
-        return this.displayedShop.getItemSubcategories(this.categoryFilter);
+        this.swappableDisplay.setActiveItem(item);
     }
 
-    getActiveFilter()
+    getDisplayedInventory()
     {
-        return this.categoryFilter;
+        return this.swappableDisplay.getDisplayedInventory();
     }
 
     getDisabledMenu()
     {
-        if(!this.activeShop.getCanBuy())
-        {
-            return 'buy';
-        }
-        else if(!this.activeShop.getCanSell() || this.virtualPlayerInventory.isEmpty())
-        {
-            return 'sell';
-        }
-        return ''
+        return this.activeShop.getDisabledMenu();
     }
 
-    requestCanChangeQuantity(item, quantity)
+    getShopHeader()
     {
-        let itemPrice = this.displayedPage == "buy" ? item.getPriceRaw() : -item.getPriceRaw();
-        let runningTotal = this.runningTotal;
-        let quantityInCart = item.getQuantityInCart();
-        if(player.canAfford(runningTotal + itemPrice * quantity))
+        if(this.swappableDisplay.getDisplayedPage() == "buy")
         {
-            if(quantityInCart + quantity > item.getQuantity() && !item.hasFlag("unlimited"))
-            {
-                return false;
-            }
-            if(quantityInCart + quantity > 9999)
-            {
-                return false;
-            }
-            if(quantityInCart + quantity < 0)
-            {
-                return false;
-            }
-            return true;
+            return this.activeShop.getVendorName();
         }
-        return false;
+        return "Stash";
     }
-    
-    getFormattedRunningTotal()
+
+    getDisplayedPage()
     {
-        let totalString = [];
-        let total = Money.convertRawToDenoms(this.runningTotal);
-        if(this.runningTotal < 0)
+        return this.swappableDisplay.getDisplayedPage();
+    }
+
+    setSubcategoryFilter(subcategory)
+    {
+        this.swappableDisplay.setSubcategoryFilter(subcategory);
+    }
+
+    setCategoryFilter(category)
+    {
+        this.swappableDisplay.setCategoryFilter(category);
+    }
+
+    setShop(shopName)
+    {
+        this.activeShop = Object.assign(new Shop(), JSON.parse(JSON.stringify(shops[shopName])));
+        if(gameDataAPI.checkPurchasedFromShop(shopName))
         {
-            totalString.push(<span key={total.length - 1}>+{total[total.length - 1]}{globals.denomAbbrevs[total.length - 1]}</span>);
+            this.activeShop.setInventory(gameDataAPI.getVisitedShopInventory(shopName));
         }
-        else if(this.runningTotal > 0)
-        {
-            totalString.push(<span key={total.length - 1}>-{total[total.length - 1]}{globals.denomAbbrevs[total.length - 1]}</span>);
-        }
-        else
-        {
-            totalString.push(<span key={total.length - 1}>{total[total.length - 1]}{globals.denomAbbrevs[total.length - 1]}</span>);
-        }
-        for(let i = total.length - 2; i >= 0; i--)
-        {
-            totalString.push(<span key={i}>{total[i]}{globals.denomAbbrevs[i]}</span>);
-        }
-        return totalString;
+        this.virtualPlayerInventory = JSON.parse(JSON.stringify(player.getUnsortedItems()));
+        this.swappableDisplay = new ShopInventoryDisplay(this.activeShop.getInventory(), this.virtualPlayerInventory);
+        this.swappableDisplay.initializeInventories();
+        this.swappableDisplay.initializeDisplay(this.activeShop.getCanBuy(), this.activeShop.getCanSell());
+    }
+
+    getVendorName()
+    {
+        return this.activeShop.getVendorName();
+    }
+
+    getVendorBlurb()
+    {
+        return this.activeShop.getVendorBlurb();
     }
 
     setShopItemQuantity(item, quantity)
     {
-        let itemPrice = this.displayedPage == "buy" ? item.getPriceRaw() : -item.getPriceRaw();
+        let itemPrice = this.swappableDisplay.getDisplayedPage() == "buy" ? item.getPriceRaw() : -item.getPriceRaw();
         let runningTotal = this.runningTotal;
         let quantityInCart = item.getQuantityInCart();
         let maxAmountCanAfford = 0;
@@ -135,187 +137,72 @@ export class ShopData {
         }
         else
         {
-            maxAmountCanAfford = Math.floor((player.getMoneyRaw() - runningTotal)/Math.abs(itemPrice)) + quantityInCart;
+            maxAmountCanAfford = Math.floor((player.getMoney() - runningTotal)/Math.abs(itemPrice)) + quantityInCart;
             if(maxAmountCanAfford > item.getQuantity() && !item.hasFlag("unlimited"))
             {
                 maxAmountCanAfford = item.getQuantity();
             }
         }
         this.runningTotal += (maxAmountCanAfford - quantityInCart) * itemPrice;
-        this.displayedShop.setQuantityInCart(item.getId(), maxAmountCanAfford);
+        this.swappableDisplay.setQuantity(item.getId(), maxAmountCanAfford);
         return maxAmountCanAfford;
     }
 
-    getEmptyCategories()
+    requestCanChangeQuantity(item, quantity)
     {
-        return this.displayedShop.getEmptyCategories();
+        let itemPrice = this.swappableDisplay.getDisplayedPage() == "buy" ? item.getPriceRaw() : -item.getPriceRaw();
+        let runningTotal = this.runningTotal;
+        let quantityInCart = item.getQuantityInCart();
+        if(player.canAfford(runningTotal + itemPrice * quantity))
+        {
+            if(quantityInCart + quantity > item.getQuantity() && !item.hasFlag("unlimited"))
+            {
+                return false;
+            }
+            if(quantityInCart + quantity > 9999)
+            {
+                return false;
+            }
+            if(quantityInCart + quantity < 0)
+            {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
-    getItemDisplayPrice(item)
+    getFormattedRunningTotal()
     {
-        if(this.displayedPage == "buy")
+        let totalString = [];
+        let total = Money.convertRawToDenoms(this.runningTotal);
+        if(this.runningTotal < 0)
         {
-            return item.getPrice();
+            totalString.push(<span key={total.length - 1}>+{total[total.length - 1]}{globals.denomAbbrevs[total.length - 1]}</span>);
+        }
+        else if(this.runningTotal > 0)
+        {
+            totalString.push(<span key={total.length - 1}>-{total[total.length - 1]}{globals.denomAbbrevs[total.length - 1]}</span>);
         }
         else
         {
-            return item.getSalePrice();
+            totalString.push(<span key={total.length - 1}>{total[total.length - 1]}{globals.denomAbbrevs[total.length - 1]}</span>);
         }
-    }
-
-    getShopInventory()
-    {
-        return this.displayedShop.getFilteredInventory(this.categoryFilter, this.subcategoryFilter);
-    }
-
-    getItemPrice(item)
-    {
-        if(this.displayedPage == "buy")
+        for(let i = total.length - 2; i >= 0; i--)
         {
-            return Money.convertDenomsToRaw(item.getPrice());
+            totalString.push(<span key={i}>{total[i]}{globals.denomAbbrevs[i]}</span>);
         }
-        else
-        {
-            return -Money.convertDenomsToRaw(item.getSalePrice());
-        }
-    }
-
-    setSubcategoryFilter(subcategory)
-    {
-        if(this.subcategoryFilter !== subcategory)
-        {
-            this.subcategoryFilter = subcategory;
-            if(this.activeItem.getId() !== "")
-            {
-                if(subcategory !== "all" && this.activeItem.getSubcategory() !== subcategory)
-                {
-                    this.activeItem = new ShopItem();
-                }
-            }
-        }
-    }
-
-    setCategoryFilter(category)
-    {
-        if(this.categoryFilter !== category)
-        {
-            this.categoryFilter = category;
-            this.subcategoryFilter = "all";
-            if(this.activeItem.getId() !== "")
-            {
-                if(category !== "all" && this.activeItem.getCategory() !== category)
-                {
-                    this.activeItem = new ShopItem();
-                }
-            }
-        }
-    }
-    
-    getShopHeader()
-    {
-        if(this.displayedPage == "buy")
-        {
-            return this.activeShop.getVendorName();
-        }
-        return "Stash"
+        return totalString;
     }
 
     getRunningTotal()
     {
         return this.runningTotal;
     }
-
-    getDisplayedPage()
-    {
-        return this.displayedPage;
-    }
-
-    swapShopInventory(buyOrSell)
-    {
-        this.displayedPage = buyOrSell;
-        if(this.displayedPage == "buy")
-        {
-            this.displayedShop = this.activeShop;
-        }
-        else
-        {
-            this.displayedShop = this.virtualPlayerShop;
-        }
-        this.activeFilter = "all";
-        this.categoryFilter = "all";
-        this.subcategoryFilter = "all";
-        this.activeItem = new ShopItem();
-    }
-
-    setShop(shopName)
-    {
-        this.virtualPlayerShop = new Shop(JSON.parse(JSON.stringify(player.getUnsortedItems())));
-        this.virtualPlayerShop.initializeInventory();
-        this.virtualPlayerShop.setSalePrices();
-        this.virtualPlayerInventory = player.getInventory();
-        this.activeShop = Object.assign(new Shop(), JSON.parse(JSON.stringify(shops[shopName])));
-        
-        if(player.checkPurchasedFromShop(shopName))
-        {
-            this.activeShop.setInventory(player.getVisitedShopInventory(shopName));
-        }
-        console.log(this.activeShop);
-        this.activeShop.initializeInventory();
-
-        if(!this.activeShop.getCanBuy())
-        {
-            this.displayedShop = this.virtualPlayerShop;
-        }
-        else
-        {
-            this.displayedShop = this.activeShop;
-        }
-        this.activeItem = new ShopItem();
-    }
-
-
-    getVendorName()
-    {
-        return this.activeShop.getVendorName();
-    }
-
-    getVendorBlurb()
-    {
-        return this.activeShop.getVendorBlurb();
-    }
-
-    getActiveItem()
-    {
-        return this.activeItem;
-    }
-
-    getActiveItemId()
-    {
-        if(this.activeItem.getItem() == null)
-        {
-            return ''
-        }
-        return this.activeItem.getId();
-    }
-
-    setActiveShopItem(item)
-    {
-        this.activeItem = item;
-    }
-
-    getSubcategoryFilter()
-    {
-        return this.subcategoryFilter;
-    }
-
-    getCategoryFilter()
-    {
-        return this.categoryFilter;
-    }
 }
 
 class Shop {
-    constructor(inventory, shopId ="", vendor={}, type="item", canSell=true, canBuy=true)
+    constructor(inventory = {}, shopId ="", vendor={}, type="item", canSell=true, canBuy=true)
     {
         this.vendor = vendor;
         this.shopId = shopId;
@@ -323,7 +210,55 @@ class Shop {
         this.type = type;
         this.canSell = canSell;
         this.canBuy = canBuy;
-        
+    }
+
+    swapShopInventory(buyOrSell)
+    {
+        this.swappableDisplay.swapInventory(buyOrSell);
+    }
+
+    getInventory()
+    {
+        return this.inventory;
+    }
+
+    setActiveItem(item)
+    {
+        this.swappableDisplay.setActiveItem(item);
+    }
+
+    getDisplayedPage()
+    {
+        return this.swappableDisplay.getDisplayedPage();
+    }
+
+    checkout()
+    {
+        this.swappableDisplay.checkout(this.shopId);
+    }
+
+    getShopHeader()
+    {
+        if(this.swappableDisplay.getDisplayedPage() == "buy")
+        {
+            return this.vendor.name;
+        }
+        return "Stash"
+    }
+
+    setCategoryFilter(category)
+    {
+        this.swappableDisplay.setCategoryFilter(category);
+    }
+
+    setSubcategoryFilter(subcategory)
+    {
+        this.swappableDisplay.setSubcategoryFilter(subcategory);
+    }
+    
+    getActiveItem()
+    {
+        return this.swappableDisplay.getActiveItem();
     }
 
     getShopId()
@@ -336,35 +271,45 @@ class Shop {
         return this.return;
     }
 
-    initializeInventory()
+    initializeShop()
     {
-        this.inventory = new ShopInventory(this.inventory);
-        this.inventory.initializeInventory();
-        this.inventory.sortItems();
+        this.virtualPlayerInventory = JSON.parse(JSON.stringify(player.getUnsortedItems()));
+        this.swappableDisplay = new ShopInventoryDisplay(this.inventory, this.virtualPlayerInventory);
+        this.swappableDisplay.initializeInventories();
+        this.swappableDisplay.initializeDisplay(this.canBuy, this.canSell);
     }
 
-    setSalePrices()
+    getDisabledMenu()
     {
-        this.inventory.setSalePrices();
-    }
-
-    getFilteredInventory(category, subcategory)
-    {
-        if(category == "all" || subcategory == "all")
+        if(!this.canBuy)
         {
-            return this.inventory.getAllInCategory(category)
+            return 'buy';
         }
-        return this.inventory.getAllInSubcategory(subcategory);
+        else if(!this.canSell || player.isInventoryEmpty())
+        {
+            return 'sell';
+        }
+        return ''
+    }
+
+    setQuantityInCart(itemId, quantity)
+    {
+        this.swappableDisplay.setQuantity(itemId, quantity);
+    }
+
+    getDisplayedInventory()
+    {
+        return this.swappableDisplay;
     }
 
     getSoldItems()
     {
-        return this.inventory.getSoldItems();
+        return this.swappableDisplay.getSoldItems();
     }
-    
-    removeSoldItems()
+
+    getBoughtItems()
     {
-        this.inventory.removeSoldItems();
+        return this.swappableDisplay.getBoughtItems();
     }
 
     setInventory(inventory)
@@ -372,29 +317,24 @@ class Shop {
         this.inventory = inventory;
     }
 
-    addInventory(inventory)
-    {
-        this.inventory.addInventory(inventory);
-    }
-
     areItemsAdded()
     {
-        return this.inventory.areItemsAdded();
+        return this.swappableDisplay.areItemsAdded();
     }
 
     getEmptyCategories()
     {
-        return this.inventory.getEmptyCategories();
+        return this.swappableDisplay.getEmptyCategories();
     }
 
     getItemCategories()
 	{
-		return this.inventory.getItemCategories();
+		return this.swappableDisplay.getItemCategories();
 	}
 
 	getItemSubcategories(category)
 	{
-		return this.inventory.getItemSubcategories(category);
+		return this.swappableDisplay.getItemSubcategories(category);
 	}
 
     getCanBuy()
@@ -421,9 +361,6 @@ class Shop {
     {
         return this.vendor.blurb;
     }
-
-    setQuantityInCart(item, quantity)
-    {
-        this.inventory.setQuantityInCart(item, quantity);
-    }
 }
+
+export var shopAPI = new ShopAPI();

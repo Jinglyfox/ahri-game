@@ -1,0 +1,57 @@
+{
+    "money": 0,
+    "inventory" : {},
+    "equipment":{
+        "equipmentSlotOrder": ["head", "neck", "clothes", "clothes2", "clothes3", "clothes4", "clothes5"],
+        "equipment": {
+            "head": null,
+            "neck": null,
+            "clothes": "ahri_dress",
+            "clothes2": "ahri_dress2",
+            "clothes3": "ahri_dress3",
+            "clothes4": "ahri_dress4",
+            "clothes5": "ahri_dress5"
+        }
+    },
+    "statBlock": {
+        "statOrder": ["charm", "agility", "cunning", "power", "confidence", "fluff"],
+        "stats": {
+            "charm": {
+                "name": "Charm",
+                "abbreviation": "Cha.",
+                "value": 10,
+                "statCap": 20
+            },
+            "agility": {
+                "name": "Agility",
+                "abbreviation": "Agi.",
+                "value": 9,
+                "statCap": 20
+            },
+            "cunning": {
+                "name": "Cunning",
+                "abbreviation": "Cng.",
+                "value": 7,
+                "statCap": 20
+            },
+            "power": {
+                "name": "Power",
+                "abbreviation": "Pwr.",
+                "value": 5,
+                "statCap": 20
+            },
+            "confidence": {
+                "name": "Confidence",
+                "abbreviation": "Con.",
+                "value": 5,
+                "statCap": 100
+            },
+            "fluff": {
+                "name": "Fluff",
+                "abbreviation": "Fluff",
+                "value": 5,
+                "statCap": 100
+            }
+        }
+    }
+}

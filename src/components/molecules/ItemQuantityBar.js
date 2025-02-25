@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { input, request } from "../../data.js"
 import { QuantityButton } from './QuantityButton.js';
+import { shopAPI } from '../../shop.js';
 
 export function ItemQuantityBar(props) {
   let item = props.item;
@@ -24,7 +25,7 @@ export function ItemQuantityBar(props) {
     {
       quantity *= 100;
     }
-    quantity = input.setShopItemQuantity(item, item.getQuantityInCart() + quantity);
+    quantity = shopAPI.setShopItemQuantity(item, item.getQuantityInCart() + quantity);
     setDisplayedQuantity({
       value: quantity
     });
@@ -35,7 +36,7 @@ export function ItemQuantityBar(props) {
     if(/^[0-9\b]+$/.test(event.target.value) && event.target.value >= 0 && event.target.value <= 9999 || event.target.value == '')
     {
       
-      let quantity = input.setShopItemQuantity(item, Number(event.target.value));
+      let quantity = shopAPI.setShopItemQuantity(item, Number(event.target.value));
       
       if(event.target.value === '')
       {
@@ -92,7 +93,7 @@ export function ItemQuantityBar(props) {
         >
           -
         </QuantityButton>
-        <input className="quantityInput" value={displayedQuantity.value === '' ? '' : displayedQuantity.value} type="text" placeholder="0" onBlur={(e) => onBlur(e)} onChange={(e) => setQuantityInput(e)}/>
+        <input className="quantityInput" value={displayedQuantity.value === '' ? '' : item.getQuantityInCart()} type="text" placeholder="0" onBlur={(e) => onBlur(e)} onChange={(e) => setQuantityInput(e)}/>
         <QuantityButton 
           title="Hold control to add 10 items, shift to add 100, or both to add 1000." 
           disabled={!canAdd}

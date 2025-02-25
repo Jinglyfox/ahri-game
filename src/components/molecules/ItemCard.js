@@ -11,7 +11,7 @@ export function ItemCard(props)
 
     return(
         <DisplayCard classes={`itemListCard ${classes}`} onClick={onClick}>
-            <img className="itemImg" src={`resources/pictures/${item.getSubcategory()}icon.png`} />
+            <img className="itemImg" src={`resources/pictures/${item.getCategory()}icon.png`} />
             <div className="itemCardText">{children}</div>
         </DisplayCard>
     )

@@ -1,5 +1,6 @@
 import React from "react";
 import { GameArea } from "../atoms/GameArea";
+import { overworldAPI } from "../../overworld.js";
 import { input, request } from "../../data.js"
 
 export function OverworldUI(props)
@@ -9,9 +10,9 @@ export function OverworldUI(props)
     return(
         <GameArea className="overworld">
             <div id="textWrapper">
-                <div id="textArea" dangerouslySetInnerHTML={{__html: request.getDisplayText()}}></div>
+                <div id="textArea" dangerouslySetInnerHTML={{__html: overworldAPI.getDisplayText()}}></div>
             </div>
-            <ButtonDock updateGame={updateGame} buttonDock={request.getButtonDock()} />
+            <ButtonDock updateGame={updateGame} buttonDock={overworldAPI.getButtonDock()} />
         </GameArea>
     )
 }
@@ -51,7 +52,7 @@ function DockButton(props) {
 
   function buttonHandler(id)
   {
-    input.buttonPress(id)
+    overworldAPI.buttonPressed(id)
     updateGame();
   }
 

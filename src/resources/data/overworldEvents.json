@@ -1,0 +1,64 @@
+{
+    "test_event_1":{
+        "priority": 1,
+        "availableTargets": [
+            {
+                "zone": "inntown",
+                "scene": "inntown_cell_3"
+            }
+        ],
+        "target": {
+            "zone": "inntown",
+            "scene": "test_event_1_scene"
+        },
+        "gate": {
+            "locks": [
+                {
+                    "type": "flag",
+                    "flag": "player_seen_test_event_1_scene",
+                    "key": {
+                        "check": "equal",
+                        "value": true
+                    }
+                }
+            ]
+        },
+        "flags": ["unique"]
+    },
+    "test_event_2":{
+        "priority": 1,
+        "availableTargets": [
+            {
+                "zone": "playerinn",
+                "scene": "inn_entrance"
+            },
+            {
+                "zone": "inntown",
+                "scene": "inntown_cell_3"
+            }
+        ],
+        "target": {
+            "zone": "playerinn",
+            "scene": "test_event_2_scene"
+        },
+        "gate": {
+            "locks": [{
+                "type": "flag",
+                "flag": "player_seen_test_event_1_scene",
+                "key": {
+                    "check": "equal",
+                    "value": true
+                }
+            },
+            {
+                "type": "flag",
+                "flag": "player_seen_test_event_2_scene",
+                "key": {
+                    "check": "equal",
+                    "value": true
+                }
+            }]
+        },
+        "flags": ["unique", "story"]
+    }
+}

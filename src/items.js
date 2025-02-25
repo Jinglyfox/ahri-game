@@ -3,7 +3,7 @@ import items from "./resources/data/items.json"
 import { Money } from "./money"
 
 export class Item {
-	constructor(id="", name="", category="", subcategory="", description= "", priceRaw = 0, priceDenom = [], sellable = true)
+	constructor(id="", name="", category="", subcategory="", description= "", priceRaw = 0, priceDenom = [], sellable = true, flags=[])
 	{
 		this.id = id;
 		this.name = name;
@@ -12,9 +12,15 @@ export class Item {
 		this.description = description;
 		this.priceRaw = priceRaw == 0 && priceDenom != [] ? Money.convertDenomToRaw(priceDenom) : priceRaw;
 		this.priceDenom = priceDenom == [] ? Money.convertRawToDenoms(priceRaw) : priceDenom;
-		this.flags = [];
+		this.flags = flags;
+		this.slot = "";
 		//almost everything should just be flags. Whether or not it's unique, etc. Why is quantity also tied to the fucking item? tie it to the inventory.
 		this.sellable = sellable;
+	}
+
+	getSlot()
+	{
+		return this.slot;
 	}
 
 	getSubcategory()
@@ -42,8 +48,6 @@ export class Item {
 		return this.priceRaw;
 	}
 
-	
-
 	getPriceDenom()
 	{
 		this.priceDenom = Money.convertRawToDenoms(this.priceRaw);
@@ -66,13 +70,11 @@ export class Item {
 	}
 }
 
-export class ItemData {
+class ItemData {
     constructor()
     {
 
     }
-
-
 
 	initializeDictionary()
 	{
@@ -81,7 +83,7 @@ export class ItemData {
 			this[category] = {}
 			for(let item in items[category])
 			{
-				this[category][item] = Object.assign(new Item(), this[category][item]);
+				this[category][item] = Object.assign(new Item(), items[category][item]);
 			}
 		}
 	}
@@ -93,6 +95,7 @@ export class ItemData {
 
 	getItemById(itemId)
 	{
+		
 		for(let category in this)
 		{
 			for(let item in this[category])
@@ -154,3 +157,5 @@ export class ItemData {
 		return categories;
 	}
 }
+
+export var itemData = new ItemData();

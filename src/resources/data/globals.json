@@ -2,5 +2,11 @@
     "denoms": [1000, 1000, 1000],
     "denomNames": ["copper","silver","gold","platinum"],
     "denomAbbrevs": ["cp", "sp", "gp", "pp"],
-    "salePriceMultiplier": 0.6
+    "salePriceMultiplier": 0.6,
+    "timeSlices": 4,
+    "weekLength": 7,
+    "dayNames": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    "timeFormat": "slices",
+    "timeSliceNames": ["morning", "midday", "afternoon", "evening"],
+    "dayStartsAtTime": 0
 }

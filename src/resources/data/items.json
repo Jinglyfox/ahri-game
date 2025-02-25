@@ -6,8 +6,65 @@
             "category": "armor",
             "subcategory": "heavy",
             "description": "armor for thine nipples",
+            "flags": ["equippable"],
+            "slot": "clothes",
             "priceRaw": 150000,
             "sellable": true
+        },
+        "ahri_dress": {
+            "id": "ahri_dress",
+            "name": "Ahri's Dress",
+            "category": "armor",
+            "subcategory": "Light",
+            "description": "Ahri's signature white, red, and gold dress, complete with corset and accessories. The fabric is soft and supple, making it easy to wear and comfortable for long periods of time. Ahri's almost never seen without it, and it's by far her favorite.",
+            "flags": ["equippable"],
+            "slot": "clothes",
+            "priceRaw": 1000,
+            "sellable": false
+        },
+        "ahri_dress2": {
+            "id": "ahri_dress2",
+            "name": "Ahri's Dress2",
+            "category": "armor",
+            "subcategory": "Light",
+            "description": "2Ahri's signature white, red, and gold dress, complete with corset and accessories. The fabric is soft and supple, making it easy to wear and comfortable for long periods of time. Ahri's almost never seen without it, and it's by far her favorite.",
+            "flags": ["equippable"],
+            "slot": "clothes2",
+            "priceRaw": 1000,
+            "sellable": false
+        },
+        "ahri_dress3": {
+            "id": "ahri_dress3",
+            "name": "Ahri's Dress3",
+            "category": "armor",
+            "subcategory": "Light",
+            "description": "3Ahri's signature white, red, and gold dress, complete with corset and accessories. The fabric is soft and supple, making it easy to wear and comfortable for long periods of time. Ahri's almost never seen without it, and it's by far her favorite.",
+            "flags": ["equippable"],
+            "slot": "clothes3",
+            "priceRaw": 1000,
+            "sellable": false
+        },
+        "ahri_dress4": {
+            "id": "ahri_dress4",
+            "name": "Ahri's Dress4",
+            "category": "armor",
+            "subcategory": "Light",
+            "description": "4Ahri's signature white, red, and gold dress, complete with corset and accessories. The fabric is soft and supple, making it easy to wear and comfortable for long periods of time. Ahri's almost never seen without it, and it's by far her favorite.",
+            "flags": ["equippable"],
+            "slot": "clothes4",
+            "priceRaw": 1000,
+            "sellable": false
+        },
+        "ahri_dress5": {
+            "id": "ahri_dress5",
+            "name": "Ahri's Dress5",
+            "category": "armor",
+            "subcategory": "Light",
+            "description": "5Ahri's signature white, red, and gold dress, complete with corset and accessories. The fabric is soft and supple, making it easy to wear and comfortable for long periods of time. Ahri's almost never seen without it, and it's by far her favorite.",
+            "flags": ["equippable"],
+            "slot": "clothes5",
+            "priceRaw": 1000,
+            "sellable": false
         }
     },
     "consumable": {
@@ -80,6 +137,8 @@
             "subcategory": "bow",
             "description": "Rootie tootie point and shooty. Good for attacking from afar.",
             "priceRaw": 100000000,
+            "flags":["equippable"],
+            "slot": "head",
             "sellable": true,
             "salePriceMultiplier": 0.5
         },

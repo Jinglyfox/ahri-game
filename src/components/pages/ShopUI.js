@@ -9,25 +9,25 @@ import { GameArea } from '../atoms/GameArea.js';
 import { HalfArea } from '../atoms/HalfArea.js';
 import { useState } from 'react';
 import { input, request } from "../../data.js"
+import { shopAPI } from '../../shop.js';
 
 export function ShopUI(props){
   let updateGame = props.updateGame;
 
-    return(
+  return(
     <GameArea>
       <div className="shopWrapper">
         <HalfArea>
-            <VendorCard vendorName={request.getVendorName()} vendorBlurb={request.getVendorBlurb()} />
-            <ItemInfoCard item={request.getActiveShopItem()}/>
+            <VendorCard vendorName={shopAPI.getVendorName()} vendorBlurb={shopAPI.getVendorBlurb()} />
+            <ItemInfoCard item={shopAPI.getActiveItem()}/>
         </HalfArea>
         <HalfArea>
-            <ShopHeader updateInventory={updateGame} disabledMenu={request.getDisabledMenu()} displayedPage={request.getDisplayedPage()} header={request.getShopHeader()}/>
-            <ShopInventory updateInventory={updateGame} items={request.getShopInventory()}/>
-            <RunningTotal updateInventory={updateGame} total={request.getRunningTotal()}/>
+            <ShopHeader updateInventory={updateGame} disabledMenu={shopAPI.getDisabledMenu()} displayedPage={shopAPI.getDisplayedPage()} header={shopAPI.getShopHeader()}/>
+            <ShopInventory updateInventory={updateGame} inventory={shopAPI.getDisplayedInventory()}/>
+            <RunningTotal updateInventory={updateGame} total={shopAPI.getFormattedRunningTotal()}/>
             <ShopDock updateGame={updateGame}/>
         </HalfArea>
       </div>
     </GameArea>
-
   )
 }

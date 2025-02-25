@@ -1,8 +1,9 @@
 import React from 'react';
 import { useState } from 'react';
 import { input, request } from "../../data.js"
-import { InventoryHeader } from '../atoms/InventoryHeader.js';
+import { ShopInventoryHeader } from '../atoms/ShopInventoryHeader.js';
 import { ShopDockButton } from './ShopDockButton.js';
+import { shopAPI } from '../../shop.js';
 
 export function ShopHeader (props) {
 
@@ -11,16 +12,16 @@ export function ShopHeader (props) {
     let displayedPage = props.displayedPage
     function swapInventory(buyOrSell)
     {
-        input.swapShopInventory(buyOrSell)
+        shopAPI.swapShopInventory(buyOrSell)
         props.updateInventory();
     }
 
     return(
-        <div id="shopHeader">
+        <div id="inventoryHeaderWrapper">
             <ShopDockButton active={displayedPage == 'buy'} disabled={buyDisabled} onClick={() => swapInventory(("buy"))}>
                 Buy
             </ShopDockButton>
-            <InventoryHeader>{props.header}</InventoryHeader>
+            <ShopInventoryHeader>{props.header}</ShopInventoryHeader>
             <ShopDockButton active={displayedPage == 'sell'} disabled={sellDisabled} onClick={() => swapInventory("sell")}>
                 Sell
             </ShopDockButton>

@@ -8,12 +8,14 @@ export function Inventory(props) {
     let updateInventory = props.updateInventory;
     let updateParentCategory = props.updateParentCategory;
     let updateSubcategory = props.updateSubcategory;
+    let inventory = props.inventory;
+    let id = props.id;
     let children = props.children;
 
     return(
-        <div id="shopInventoryWrapper">
-            <FilterList updateInventory={updateInventory} updateFilter={updateParentCategory} activeFilter={request.getCategoryFilter()} filterCategories={request.getItemCategories()} />
-            <FilterList updateInventory={updateInventory} updateFilter={updateSubcategory} activeFilter={request.getSubcategoryFilter()} filterCategories={request.getItemSubcategories()} />
+        <div id={id}>
+            <FilterList updateInventory={updateInventory} updateFilter={updateParentCategory} activeFilter={inventory.getCategoryFilter()} emptyCategories={inventory.getEmptyCategories()} filterCategories={inventory.getItemCategories()} />
+            <FilterList updateInventory={updateInventory} updateFilter={updateSubcategory} activeFilter={inventory.getSubcategoryFilter()} emptyCategories ={[]}filterCategories={inventory.getItemSubcategories()} />
             <div id="itemList">
                 {children}
             </div>

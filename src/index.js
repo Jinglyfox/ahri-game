@@ -5,7 +5,12 @@ import { input, request } from "./data.js"
 import { ShopUI } from './components/pages/ShopUI.js';
 import { BlankUI } from './components/pages/BlankUI.js';
 import { OverworldUI } from './components/pages/OverworldUI.js';
+import { ReportUI } from './components/pages/ReportUI.js';
 import './index.css';
+import { PlayerInventoryUI } from './components/pages/PlayerInventoryUI.js';
+import { overworldAPI } from './overworld.js';
+import { gameDataAPI } from './GameData.js';
+import { StatBlock } from './components/molecules/StatBlock.js';
 
 
 function Game() {
@@ -29,7 +34,7 @@ function Game() {
       gameUpdated: !gameState.gameUpdated
     });
     setUi({
-      uiToRender: request.getUiToRender()
+      uiToRender: gameDataAPI.getUiToRender()
     });
     setMoney({
       moneyUpdated: request.getPlayerWalletDenoms()
@@ -69,7 +74,6 @@ function Game() {
  
   function setUI()
   {
-    console.log("hello1");
     switch(ui.uiToRender)
     {
       case "blank":
@@ -78,12 +82,16 @@ function Game() {
         return <OverworldUI updateGame={updateGame} />
       case "shop":
         return <ShopUI updateGame={updateGame}/>
+      case "player_inventory":
+        return <PlayerInventoryUI updateGame={updateGame}/>
+      case "sleep":
+        return <ReportUI updateGame={updateGame}/>
     }
   }
 
   return(
     <div id="gameWrapper">
-      <MenuBar updateMoney={updateMoney} startGame={startGame} values={money.moneyUpdated}/> 
+      <MenuBar updateMoney={updateMoney} startGame={startGame} statBlock={request.getPlayerStats()} values={money.moneyUpdated}/> 
       {setUI()}
       <div className ="sidebar" id="sidebarRight">
         <button onClick={() => saveGame()}><span>Save</span></button>
@@ -91,24 +99,20 @@ function Game() {
       </div>
     </div>
   )
-
-  
-  
 }
 
 function MenuBar(props) {  
-  function updateShops()
-  {
-    //data.updateShops()
-  }
   
   let values = props.values;
+  let statBlock = props.statBlock;
 
   return (
     <div className ="sidebar" id="sidebarLeft">
         <div><button onClick={props.startGame}><span>Start</span></button></div>
         <MoneyBar denominations={request.getDenomNames()} updateMoney={props.updateMoney} values={values}/>
-        <div><button onClick={() => updateShops()}>Update Shops</button></div>
+        <StatBlock statBlock={statBlock}></StatBlock>
+        <div>{gameDataAPI.getCurrentTime()}</div>
+        <div>{gameDataAPI.getCurrentDay()}</div>
     </div>		
   )
 }
@@ -120,13 +124,13 @@ function MoneyBar(props) {
 
   function addMoney()
   {
-    input.addMoney([10, 10, 10, 10]);
+    input.addMoney(10010010010);
     props.updateMoney()
   }
 
   function removeMoney()
   {
-    input.removeMoney([13, 156, 14, 2]);
+    input.removeMoney(38974536);
     props.updateMoney()
   }
 

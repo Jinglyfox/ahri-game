@@ -8,11 +8,11 @@ export function FilterList(props) {
   let activeFilter = props.activeFilter;
   let filterCategories = props.filterCategories;
   let updateFilter = props.updateFilter;
+  let emptyCategories = props.emptyCategories;
 
   function loadFilters()
   {
     let filterList = []
-    let emptyCategories = request.getEmptyCategories();
     if(!filterCategories.includes("all"))
     {
       filterCategories.unshift("all");

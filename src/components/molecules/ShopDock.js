@@ -1,28 +1,29 @@
 import React from 'react';
 import { input, request } from "../../data.js"
-import { ShopDockButton } from './ShopDockButton.js';
+import { Button } from '../atoms/Button.js';
 import { useState } from 'react';
+import { shopAPI } from '../../shop.js';
 
 export function ShopDock(props) {
     let updateGame = props.updateGame;
 
     function checkout()
     {
-        input.shopCheckout();
+        shopAPI.checkout();
         shopReturn();
     }
 
     function shopReturn()
     {
-        input.shopReturn()
+        shopAPI.shopReturn()
         updateGame();
     }
 
     return(
-        <div id="shopDock">
-            <ShopDockButton disabled={true}>Inspect</ShopDockButton>
-            <ShopDockButton onClick={checkout} disabled={!request.areItemsAdded()}>Checkout</ShopDockButton>
-            <ShopDockButton onClick={shopReturn}>Return</ShopDockButton>
+        <div id="inventoryDock">
+            <Button disabled={true}>Inspect</Button>
+            <Button onClick={checkout} disabled={!shopAPI.areItemsAdded()}>Checkout</Button>
+            <Button onClick={shopReturn}>Return</Button>
         </div>
     )
 }

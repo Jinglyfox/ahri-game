@@ -1,15 +1,63 @@
 import items from "./resources/data/items.json"
-import { Item } from "./items";
+import { Item, itemData } from "./items";
 import globals from "./resources/data/globals.json"
 import { Money } from "./money";
+import { overworldAPI } from "./overworld";
+import { player } from "./player";
 
-/*
-I want inventory objects to have a list of items 
+class InventoryAPI {
+    constructor(displayedInventory = {})
+    {
+        this.displayedInventory = new DisplayInventory(displayedInventory);
+    }
 
+    menuClosed()
+    {
+        overworldAPI.menuClosed();
+    }
 
+    equipItem()
+    {
+        this.displayedInventory.equipItem();
+    }
 
-*/
+    unequipItem()
+    {
+        this.displayedInventory.unequipItem();
+    }
 
+    getDisplayedInventory()
+    {
+        return this.displayedInventory;
+    }
+
+    setCategoryFilter(category)
+    {
+        this.displayedInventory.setCategoryFilter(category);
+    }
+
+    setSubcategoryFilter(category)
+    {
+        this.displayedInventory.setSubcategoryFilter(category);
+    }
+
+    setActiveItem(item)
+    {
+        this.displayedInventory.setActiveItem(item);
+    }
+
+    getActiveItem()
+    {
+        return this.displayedInventory.getActiveItem();
+    }
+
+    setInventory(inventory)
+    {
+        this.displayedInventory = new DisplayInventory(inventory);
+        this.displayedInventory.initializeInventory();
+        this.displayedInventory.sortItems();
+    }
+}
 
 export class Inventory
 {
@@ -34,6 +82,20 @@ export class Inventory
                 }
             }
         }
+    }
+
+    getQuantity(itemId)
+    {
+        if(!this.itemsUnsorted.hasOwnProperty(itemId))
+        {
+            return 0;
+        }
+        return this.itemsUnsorted[itemId].getQuantity();
+    }
+
+    getItemCategories()
+    {
+        return itemData.getItemCategories();
     }
 
     getItemSubcategories(category)
@@ -65,6 +127,7 @@ export class Inventory
         }
         for(let category in items)
         {
+            
             if(!this.itemsSorted.hasOwnProperty(category))
             {
                 this.emptyCategories.push(category);
@@ -160,6 +223,7 @@ export class Inventory
 		{
             if(this.itemsUnsorted[item].getSubcategory() == subcategory)
 			{
+                
                 itemsInSubcategory.push(this.itemsUnsorted[item])
 			}
 		}
@@ -189,7 +253,115 @@ export class Inventory
 	}
 }
 
-export class ShopInventory extends Inventory
+export class DisplayInventory extends Inventory
+{
+    constructor(itemsUnsorted={})
+    {
+        super(itemsUnsorted)
+        this.categoryFilter = "all";
+        this.subcategoryFilter = "all";
+        this.activeItem = new InventoryItem();
+    }
+
+    equipItem()
+    {
+        player.equipItem(this.activeItem);
+        this.removeItem(this.activeItem.getId(), 1);
+        this.resetActiveItem()
+    }
+
+    unequipItem()
+    {
+        player.unequipItem(this.activeItem.getSlot());
+        this.addItem(this.activeItem.getId(), 1);
+        this.resetActiveItem()
+    }
+
+    resetActiveItem()
+    {
+        this.activeItem.removeFlag("active");
+        this.activeItem = new InventoryItem();
+    }
+
+    getSubcategoryFilter()
+    {
+        return this.subcategoryFilter;
+    }
+
+    getCategoryFilter()
+    {
+        return this.categoryFilter;
+    }
+
+    getActiveItem()
+    {
+        return this.activeItem;
+    }
+
+    getItemSubcategories()
+    {
+        return super.getItemSubcategories(this.categoryFilter);
+    }
+
+    setActiveItem(item)
+    {
+        this.activeItem.removeFlag("active");
+        this.activeItem = item;
+        this.activeItem.addFlag("active");
+    }
+
+    setSubcategoryFilter(subcategory)
+    {
+        if(this.subcategoryFilter !== subcategory)
+        {
+            this.subcategoryFilter = subcategory;
+            if(this.activeItem.getId() !== "")
+            {
+                if(subcategory !== "all" && this.activeItem.getSubcategory() !== subcategory && !this.activeItem.hasFlag("equipped"))
+                {
+                    this.resetActiveItem()
+                }
+            }
+        }
+    }
+
+    setCategoryFilter(category)
+    {
+        if(this.categoryFilter !== category)
+        {
+            this.categoryFilter = category;
+            this.subcategoryFilter = "all";
+            if(this.activeItem.getId() !== "")
+            {
+                if(category !== "all" && this.activeItem.getCategory() !== category && !this.activeItem.hasFlag("equipped"))
+                {
+                    this.resetActiveItem()
+                }
+            }
+        }
+    }
+
+    getFilteredInventory()
+    {
+        if(this.categoryFilter == "all" || this.subcategoryFilter == "all")
+        {
+            return this.getAllInCategory(this.categoryFilter);
+        }
+        return this.getAllInSubcategory(this.subcategoryFilter);
+    }
+
+    resetPage()
+    {
+        this.categoryFilter = "all";
+        this.subcategoryFilter = "all";
+        if(!this.activeItem.hasFlag("equipped"))
+        {
+            this.resetActiveItem()
+        }
+    }
+}
+
+export class ShopInventory extends DisplayInventory
 {
     constructor(itemsUnsorted = {})
 	{
@@ -279,6 +451,38 @@ export class InventoryItem
         this.flags = flags;
     }
 
+    getItem()
+    {
+        return this.item;
+    }
+
+    getSlot()
+    {
+        
+        if(this.item != null)
+        {
+            return this.item.getSlot();
+        }
+    }
+
+    addFlag(flag)
+    {
+        this.flags.push(flag);
+    }
+
+    removeFlag(flag)
+    {
+        if(this.flags.includes(flag))
+        {
+            this.flags.splice(this.flags.indexOf(flag));
+        }
+    }
+
+    getFormattedPrice()
+    {
+		return Money.formatPrice(Money.convertRawToDenoms(this.item.getPriceRaw()));
+    }
+
     addQuantity(quantity)
     {
         this.quantity += quantity;
@@ -296,6 +500,25 @@ export class InventoryItem
             return "";
         }
         return this.item.getId();
+    }
+
+    equipItem()
+    {
+        this.flags.push("equipped");
+    }
+
+    unequipItem()
+    {
+        this.flags.splice(this.flags.indexOf("equipped"));
+    }
+
+    itemHasFlag(flag)
+    {
+        if(this.item == null)
+        {
+            return false;
+        }
+        return this.item.hasFlag(flag);
     }
 
     hasFlag(flag)
@@ -403,3 +626,5 @@ export class ShopItem extends InventoryItem
         return this.quantityInCart;
     }
 }
+
+export var inventoryAPI = new InventoryAPI();

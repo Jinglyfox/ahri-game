@@ -3,6 +3,8 @@ import React from 'react';
 export function InventoryHeader({children})
 {
     return(
-        <span id="inventoryHeader">{children}</span>
+        <div id="inventoryHeaderWrapper">
+            <span id="inventoryHeader">{children}</span>
+        </div>
     )
 }

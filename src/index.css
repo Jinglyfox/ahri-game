@@ -1,4 +1,21 @@
 :root {
+	/* Old gray Color Scheme. Probably need to export this.
+	--gameAreaBackground: #585656;
+	--buttonColor: #0e0d0d;
+	--menuColorA: #0c0c0c;
+	--menuColorB: #303030;
+	--menuColorC: #696969;
+	--oddItemCard: #242424;
+	--evenItemCard: #383838;
+	--accentColorA: #BF0000;
+	--accentColorB: #CCBA78;
+	--highlight: #8B0000;
+	--overlayColor: #414141;
+	--moneyBackground: #4e4e4e;
+	--headerColor: rgb(228, 228, 228);
+	--fontColor: white;*/
+	
+	
 	--gameAreaBackground: #6d3402;
 	--buttonColor: #1D0600;
 	--menuColorA: #1D0600;
@@ -216,16 +233,15 @@ body {
 /* END CARD CSS */
 
 /* SHOP INVENTORY HEADER */
-#shopHeader {
+#inventoryHeaderWrapper {
 	display: flex;
 	margin: 0 1% 0 1%;
-	height: 5%;
 	justify-content: space-between;
 }
 
 #inventoryHeader {
 	background: var(--menuColorA);
-	width: 50%;
+	flex-grow: 2;
 	font-family: fantasy;
 	font-size: 1.625em;
 	padding-top: 0.2em;
@@ -234,14 +250,9 @@ body {
 	margin: 0 1% 0 1%;
 	align-self: center;
 	text-align: center;
-	flex:1;
 }
 
-.shopDockButton {
-	border-radius: 0.5em;
-	font: inherit;
-	flex-grow: 0.4;
-}
+
 /* END SHOP INVENTORY HEADER */
 
 /* SHOP INVENTORY */
@@ -293,21 +304,31 @@ body {
 	transition: 0.1s;
 }
 
+#inventoryWrapper {
+	background: var(--menuColorA);
+	display: flex;
+	flex-direction: column;
+	flex-grow:1;
+	padding: 0.375em;
+	margin: 0 1% 0 1%;
+	border-radius: 0.5em;
+	max-height: 84.7%;
+}
 
 #shopInventoryWrapper {
 	background: var(--menuColorA);
 	display: flex;
 	flex-direction: column;
 	padding: 0.375em;
-	height: 77%;
 	margin: 0 1% 0 1%;
 	border-radius: 0.5em;
+	flex-grow: 1;
+	max-height: 77%;
 }
 
 #itemList {
 	display: flex;
 	flex-direction: column;
-	flex: 1;
 	gap: 0.5em;
 	padding-top: 0.2em;
 	padding-bottom: 0.5em;
@@ -414,7 +435,7 @@ body {
 	background-color: var(--menuColorB);
 }
 
-#itemList .itemListCard.activeItemListCard {
+#itemList .itemListCard.activeItemListCard, .equipmentDisplayCard.active {
 	background: var(--highlight);
 }
 
@@ -432,6 +453,7 @@ body {
 	justify-content: space-between;
 	background: var(--menuColorA);
 	padding: 1em;
+	max-height: 6%;
 	border-radius: 0.5em;
 	margin: 0 1% 0 1%;
 }
@@ -448,9 +470,9 @@ body {
 
 /* SHOP BUTTON DOCK CSS */
 
-#shopDock {
+#inventoryDock {
 	margin: 0 1% 0 1%;
-	height: 6%;
+	min-height: 6%;
 	gap: 0.2em;
 	display: flex;
 	justify-content: space-between;
@@ -603,6 +625,82 @@ button:disabled {
 
 /* END BUTTONS */
 
+/* STAT DISPLAY */
+
+.statBlockWrapper {
+	display: flex;
+	flex-direction: column;
+	margin-left: 0.3em;
+	margin-right: 0.3em;
+	gap: 0.1em;
+	background-color: black;
+	padding: 0.1em;
+}
+
+.statDisplayWrapper {
+	position: relative;
+}
+
+.statDisplay {
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	background-color: rgb(85, 85, 85);
+	border-top-right-radius: 0.5em;
+	border-bottom-right-radius: 0.5em;
+}
+
+.statDisplay span {
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+	z-index: 2;
+}
+
+.statProgressBar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	content: "";
+	height: 100%;
+	width: 0%;
+	z-index: 1;
+	border-top-right-radius: 0.5em;
+	border-bottom-right-radius: 0.5em;
+}
+
+.CharmColor {
+	background-color: rgb(184, 126, 136);
+	opacity: 0.4;
+}
+
+.AgilityColor {
+	background-color: rgb(44, 158, 44);
+	opacity: 0.4;
+}
+
+.CunningColor {
+	background-color: rgb(39, 105, 105);
+	opacity: 0.4;
+}
+
+.PowerColor {
+	background-color: red;
+	opacity: 0.4;
+}
+
+.ConfidenceColor {
+	background-color: orange;
+	opacity: 0.4;
+}
+
+.FluffColor {
+	background-color: gray;
+	opacity: 0.4;
+}
+
+/* END STAT DISPLAY */
+
+
 /* DIALOGUE BOX */
 
 .dialogueBoxWrapper {
@@ -721,7 +819,39 @@ button:focus:not(focus-visible) {
 
 
 
+/* PLAYER EQUIPMENT DISPLAY */
 
+.playerEquipmentWrapper {
+	min-height: 40%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding-top: 1em;
+	padding-bottom: 1em;
+}
+
+.equipmentRow {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.equipmentDisplayCard {
+	background-color: var(--menuColorC);
+	justify-self:end;
+	max-height: 5em;
+	min-width: 0;
+}
+
+.slotImg {
+	width: 3em;
+	height: 3em;
+	padding: .2em;
+	border-radius: 0.5em;
+	background-color: var(--menuColorB);
+}
+
+/* END PLAYER EQUIPMENT DISPLAY */
 
 
 

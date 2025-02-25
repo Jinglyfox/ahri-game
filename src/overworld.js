@@ -1,26 +1,38 @@
 import zones from "./resources/data/zones.json"
 import { OverworldNPCData } from "./overworldNPC";
+import { overworldEventData } from "./OverworldEvents";
 import { Gate } from "./gate";
+import { gameDataAPI } from "./GameData";
 import { player } from "./player";
-import { FlagSetter } from "./flagsetter";
-
+import { FlagSetter } from "./FlagSetter";
+import { shopAPI } from "./shop";
+import { inventoryAPI } from "./inventory";
 
 let overworldNPCData = new OverworldNPCData();
 
-class OverworldData
+class OverworldAPI
 {
-    constructor(activeZoneId, activeSceneId)
+    constructor(activeZoneId ="inntown", activeSceneId="inn_entrance", uiToRender = "overworld")
     {
         this.activeZoneId = activeZoneId;
 		this.activeSceneId = activeSceneId;
+		this.uiToRender = uiToRender;
+		this.eventLockout = false;
 		this.zones = {};
     }
 
-	initializeZones()
+	menuClosed()
+	{
+		gameDataAPI.setUiToRender("overworld");
+		this.setNewScene({zone: this.activeZoneId, scene: this.activeSceneId})
+	}
+
+	initializeOverworld()
 	{
 		this.activeZoneId = "inntown"
 		this.activeSceneId = "inn_entrance"
 
+		overworldEventData.initializeEvents();
 		overworldNPCData.initializeOverworldNPCs();
 
 		for(let zone in zones) {
@@ -28,6 +40,7 @@ class OverworldData
 			this.zones[zone] = new Zone(zone, zones[zone]);
 			this.zones[zone].initializeZone(overworldNPCList);
 		}
+		overworldEventData.loadEventsInZone(this.activeZoneId);
 		this.setNewScene({zone: this.activeZoneId, scene: this.activeSceneId});
 	}
 	
@@ -43,8 +56,48 @@ class OverworldData
 
 	buttonPressed(buttonId)
 	{
+		this.activeScene.buttonPressed(buttonId);
+		let buttonType = this.getButtonType(buttonId);
 		let target = this.activeScene.getTarget(buttonId);
-		this.setNewScene(target)
+		gameDataAPI.setUiToRender(buttonType);
+		switch(buttonType)
+		{
+			case "overworld":
+				this.checkEvents(target)
+				break;
+			case "shop":
+				shopAPI.setShop(this.getSceneTarget(buttonId));
+				break;
+			case "player_inventory":
+				inventoryAPI.setInventory(player.getUnsortedItems());
+				break;
+			case "sleep":
+				gameDataAPI.playerSlept();
+				break;
+			default:
+				Error(`Button Id ${buttonId} returned type ${buttonType} which is not a valid type.`)
+		}
+		
+		
+	}
+
+	checkEvents(target)
+	{
+		let newTarget = target;
+		if(target.zone != this.activeZoneId)
+		{
+			overworldEventData.loadEventsInZone(target.zone);
+		}
+		if(this.eventLockout)
+		{
+			this.eventLockout = false;
+		}
+		else if(overworldEventData.checkForAvailableEvents(target.zone, target.scene))
+		{
+			newTarget = overworldEventData.getEventTarget(target.zone, target.scene);
+		}
+
+		this.setNewScene(newTarget);
 	}
 
 	setNewScene(target)
@@ -57,25 +110,30 @@ class OverworldData
 		let buttonsToAdd = overworldNPCData.getOverworldNPCButtons(this.activeZoneId, this.activeSceneId);
 		this.activeScene.addButtons(buttonsToAdd);
 		this.activeScene.checkLocks();
-		if(!player.hasSeenScene(this.activeSceneId))
+		this.activeScene.checkCosts();
+		if(!gameDataAPI.hasSeenScene(this.activeSceneId))
 		{
-			player.seenScene(this.activeSceneId)
+			gameDataAPI.seenScene(this.activeSceneId)
+		}
+		if(this.activeScene.hasFlag("set_event_lockout"))
+		{
+			this.eventLockout = true;
 		}
 	}
 
-	getButtonType(buttonID)
+	getButtonType(buttonId)
 	{
-		return this.activeScene.getButtonType(buttonID);
+		return this.activeScene.getButtonType(buttonId);
 	}
 
-	getSceneTarget(buttonID)
+	getSceneTarget(buttonId)
 	{
-		return this.activeScene.getSceneTarget(buttonID);
+		return this.activeScene.getSceneTarget(buttonId);
 	}
 
-	getTarget(buttonID)
+	getTarget(buttonId)
 	{
-		return this.activeScene.getTarget(buttonID);
+		return this.activeScene.getTarget(buttonId);
 	}
 
     getScene(sceneID, zone = this.activeZone)
@@ -145,13 +203,27 @@ class Scene
 		this.timeCost = null;
 		this.setFlags = [];
 		this.sceneActions = [];
+		this.flags = [];
+	}
+
+	hasFlag(flag)
+	{
+		return this.flags.includes(flag);
 	}
 
 	checkLocks()
 	{
 		for(let button in this.buttonDock)
 		{
-			this.buttonDock[button].checkLock();
+			this.buttonDock[button].checkLocks();
+		}
+	}
+
+	checkCosts()
+	{
+		for(let button in this.buttonDock)
+		{
+			this.buttonDock[button].checkCost();
 		}
 	}
 
@@ -217,29 +289,29 @@ class Scene
 		}
 	}
 
+	buttonPressed(buttonId)
+	{
+		this.buttonDock[buttonId].applyCost();
+	}
+
 	getID()
 	{
 		return this.id;
 	}
 
-	getButtonType(buttonID)
+	getButtonType(buttonId)
 	{
-		return this.buttonDock[buttonID].getType();
+		return this.buttonDock[buttonId].getType();
 	}
 
-	getSceneTarget(buttonID)
+	getSceneTarget(buttonId)
 	{
-		return this.buttonDock[buttonID].getSceneTarget();
+		return this.buttonDock[buttonId].getSceneTarget();
 	}
 
-	getTarget(buttonID)
+	getTarget(buttonId)
 	{
-		return this.buttonDock[buttonID].getTarget();
-	}
-
-	getButtonIds()
-	{
-		return this.buttonIDs;
+		return this.buttonDock[buttonId].getTarget();
 	}
 	
 	getDisplayText()
@@ -264,13 +336,18 @@ class SceneAction
 	performAction()
 	{
 		this.gate = Object.assign(new Gate(), this.gate);
-		if(this.gate.checkLock())
+		if(this.gate.checkLocks())
 		{
 			switch(this.action)
 			{
 				case "add_item":
 					player.addItems(this.items);
 					break;
+				case "add_stat":
+					player.addStats(this.stats);
+					break;
+				case "set_flag":
+					gameDataAPI.setFlags(this.flags)
 			}
 		}
 	}
@@ -286,16 +363,34 @@ class DockButton
 		this.disabled = false;
 	}
 
-	checkLock()
+	checkCost()
+	{
+		if(this.hasOwnProperty("actionCost"))
+		{
+			if(!gameDataAPI.playerHasTime(this.actionCost.time))
+			{
+				this.disabled = true;
+			}
+		}
+	}
+
+	checkLocks()
 	{
 		if(this.hasOwnProperty("gate"))
 		{
 			this.gate = Object.assign(new Gate(), this.gate);
-			this.gate.setLock();
-			if(!this.gate.checkLock())
+			if(!this.gate.checkLocks())
 			{
 				this.disabled = true;
 			}
+		}
+	}
+
+	applyCost()
+	{
+		if(this.hasOwnProperty("actionCost"))
+		{
+			gameDataAPI.advanceTime(this.actionCost.time);
 		}
 	}
 
@@ -315,4 +410,4 @@ class DockButton
 	}
 }
 
-export var overworldData = new OverworldData();
+export var overworldAPI = new OverworldAPI();

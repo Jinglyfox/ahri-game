@@ -1,12 +1,15 @@
 
 import globals from "./resources/data/globals.json"
-import { overworldData } from "./overworld"
+import { overworldAPI } from "./overworld"
 import { player } from "./player"
-import { ShopData } from "./shop"
-import { ItemData } from "./items"
+import { Money } from "./money"
+//import { ShopData } from "./shop"
+import { itemData } from "./items"
+import { gameDataAPI } from "./GameData"
+//import { InventoryData } from "./inventory"
 
 let shopData;
-let itemData = new ItemData();
+let inventoryData;
 let uiToRender = "overworld";
 
 class Request
@@ -18,108 +21,25 @@ class Request
 
 	getPlayerWalletDenoms()
 	{
-		return player.getWalletDenoms();
+		return Money.convertRawToDenoms(player.getMoney());
+	}
+
+	getPlayerStats()
+	{
+		return player.getStats();
 	}
 
 	initializeData()
 	{
-		overworldData.initializeZones();
 		itemData.initializeDictionary();
+		gameDataAPI.gameStarted();
+		overworldAPI.initializeOverworld();
+		
 	}
 
 	getDenomNames()
 	{
 		return globals.denomNames;
-	}
-
-	getUiToRender()
-	{
-		return uiToRender;
-	}
-
-	getButtonDock()
-	{
-		return overworldData.getButtonDock();
-	}
-
-	getDisplayText()
-	{
-		return overworldData.getDisplayText();
-	}
-
-	requestCanChangeQuantity(item, quantity)
-	{
-		return shopData.requestCanChangeQuantity(item, quantity);
-	}
-
-	getDisplayedPage()
-	{
-		return shopData.getDisplayedPage();
-	}
-
-	getEmptyCategories()
-	{
-		return shopData.getEmptyCategories();
-	}
-
-	getItemCategories()
-	{
-		return itemData.getItemCategories();
-	}
-
-	getItemSubcategories()
-	{
-		return shopData.getItemSubcategories();
-	}
-
-	getCategoryFilter()
-	{
-		return shopData.getCategoryFilter();
-	}
-
-	getSubcategoryFilter()
-	{
-		return shopData.getSubcategoryFilter();
-	}
-
-	areItemsAdded()
-	{
-		return shopData.areItemsAdded();
-	}
-
-	getDisabledMenu()
-	{
-		return shopData.getDisabledMenu();
-	}
-
-	getVendorName()
-	{
-		return shopData.getVendorName();
-	}
-
-	getVendorBlurb()
-	{
-		return shopData.getVendorBlurb();
-	}
-
-	getShopHeader()
-	{
-		return shopData.getShopHeader();
-	}
-
-	getActiveShopItem()
-	{
-		return shopData.getActiveItem();
-	}
-
-	getShopInventory()
-	{
-		return shopData.getShopInventory();
-	}
-
-	getRunningTotal()
-	{
-		return shopData.getFormattedRunningTotal();
 	}
 }
 
@@ -130,48 +50,22 @@ class Input
 
 	}
 
-	buttonPress(buttonId)
+	menuClosed()
 	{
-		let buttonType = overworldData.getButtonType(buttonId);
-		switch(buttonType)
-		{
-			case "overworld":
-				uiToRender = "overworld";
-				overworldData.buttonPressed(buttonId);
-				break;
-			case "shop":
-				uiToRender = "shop";
-				shopData = new ShopData();
-				shopData.setShop(overworldData.getSceneTarget(buttonId));
-				break;
-			case "inventory":
-				
-			default:
-				Error(`Button Id ${buttonId} returned type ${buttonType} which is not a valid type.`)
-		}
+		overworldAPI.menuClosed();
+		uiToRender = "overworld";
 	}
 
 	saveGame()
 	{
-		localStorage.setItem("foo", JSON.stringify({...overworldData.saveGame(), ...player.saveGame()}));
+		localStorage.setItem("foo", JSON.stringify({...overworldAPI.saveGame(), ...player.saveGame()}));
 	}
 
 	loadGame()
 	{
 		let saveFile = JSON.parse(localStorage.getItem("foo"));
 		player.loadGame(saveFile);
-		overworldData.loadGame(saveFile);
-	}
-
-	shopReturn()
-	{
-		overworldData.setNewScene(shopData.getShopReturn());
-		uiToRender = "overworld";
-	}
-
-	shopCheckout()
-	{
-		shopData.checkout();
+		overworldAPI.loadGame(saveFile);
 	}
 
 	addMoney(amount)
@@ -182,31 +76,6 @@ class Input
 	removeMoney(amount)
 	{
 		player.removeMoney(amount);
-	}
-
-	swapShopInventory(buyOrSell)
-	{
-		shopData.swapShopInventory(buyOrSell);
-	}
-
-	setShopItemQuantity(item, quantity)
-	{
-		return shopData.setShopItemQuantity(item, quantity);
-	}
-
-	setActiveShopItem(item)
-	{
-		shopData.setActiveShopItem(item);
-	}
-
-	setCategoryFilter(category)
-	{
-		shopData.setCategoryFilter(category);
-	}
-
-	setSubcategoryFilter(subcategory)
-	{
-		shopData.setSubcategoryFilter(subcategory);
 	}
 }
 
