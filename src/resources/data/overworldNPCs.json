@@ -28,15 +28,6 @@
                     "injectors": [],
                     "buttons": [
                         {
-                            "id": 0,
-                            "name": "Sex",
-                            "target": {
-                                "scene": "akiyo_sextransition",
-                                "zone": "playerinn"
-                            },
-                            "type": "overworld"
-                        },
-                        {
                             "id": 14,
                             "name": "Return",
                             "target": {

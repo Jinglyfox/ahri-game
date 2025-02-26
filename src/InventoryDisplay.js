@@ -16,6 +16,11 @@ class SwappableInventoryDisplay {
         this.displayedInventory = {};
     }
 
+    getEmptyCategories()
+    {
+        return this.displayedInventory.getEmptyCategories();
+    }
+
     initializeInventories()
     {
         for(let inventory of this.inventories)

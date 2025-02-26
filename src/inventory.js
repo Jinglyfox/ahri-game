@@ -11,8 +11,14 @@ class InventoryAPI {
         this.displayedInventory = new DisplayInventory(displayedInventory);
     }
 
+    getEmptyCategories()
+    {
+        return this.displayedInventory.getEmptyCategories();
+    }
+
     menuClosed()
     {
+        this.displayedInventory.resetActiveItem();
         overworldAPI.menuClosed();
     }
 
@@ -116,6 +122,7 @@ export class Inventory
 
     sortItems()
     {
+        this.emptyCategories = [];
         for(let item in this.itemsUnsorted)
         {
             let category = this.itemsUnsorted[item].getCategory();
@@ -125,12 +132,22 @@ export class Inventory
             }
             this.itemsSorted[category][item] = this.itemsUnsorted[item];
         }
+        // this is all just to set up empty arrays for the inventory UI.
+        // first checks if the inventory even has the category in it
+        // then checks if there's anything in that category
+        // if no to either, the category must be empty.
         for(let category in items)
         {
-            
             if(!this.itemsSorted.hasOwnProperty(category))
             {
                 this.emptyCategories.push(category);
+            }
+            else
+            {
+                if(!Object.keys(this.itemsSorted[category]).length > 0)
+                {
+                    this.emptyCategories.push(category);
+                }
             }
         }
     }
@@ -213,7 +230,15 @@ export class Inventory
 		else if(this.itemsUnsorted[item].getQuantity() <= quantity)
 		{
 			delete this.itemsUnsorted[item];
+            for(let category in this.itemsSorted)
+            {
+                if(this.itemsSorted[category].hasOwnProperty(item))
+                {
+                    delete this.itemsSorted[category][item];
+                }
+            }
 		}
+        this.sortItems();
 	}
 
 	getAllInSubcategory(subcategory)

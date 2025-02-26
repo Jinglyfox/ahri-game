@@ -7,8 +7,8 @@ export function FilterList(props) {
   
   let activeFilter = props.activeFilter;
   let filterCategories = props.filterCategories;
-  let updateFilter = props.updateFilter;
   let emptyCategories = props.emptyCategories;
+  let updateFilter = props.updateFilter;
 
   function loadFilters()
   {

@@ -646,8 +646,8 @@ button:disabled {
 	display: flex;
 	justify-content: space-between;
 	background-color: rgb(85, 85, 85);
-	border-top-right-radius: 0.5em;
-	border-bottom-right-radius: 0.5em;
+	border-top-right-radius: 0.2em;
+	border-bottom-right-radius: 0.2em;
 }
 
 .statDisplay span {
@@ -664,8 +664,8 @@ button:disabled {
 	height: 100%;
 	width: 0%;
 	z-index: 1;
-	border-top-right-radius: 0.5em;
-	border-bottom-right-radius: 0.5em;
+	border-top-right-radius: 0.2em;
+	border-bottom-right-radius: 0.2em;
 }
 
 .CharmColor {

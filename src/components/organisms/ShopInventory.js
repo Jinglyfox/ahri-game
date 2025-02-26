@@ -26,7 +26,6 @@ export function ShopInventory(props) {
     {
         let stock = inventory.getFilteredInventory();
         let itemCards = []
-        let activeItem = inventory.getActiveItem();
         for(let item in stock)
         {
             itemCards.push(<ShopItemCard active={stock[item].hasFlag("active") ? 'activeItemListCard' : ''} updateInventory={updateInventory} item={stock[item]} key={item} />)

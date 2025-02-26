@@ -7,13 +7,6 @@ export function EquipmentDock(props)
     let updateGame = props.updateGame;
     let activeItem = props.activeItem;
 
-
-    function returnFromInventory()
-    {
-        inventoryAPI.menuClosed()
-        updateGame();
-    }
-
     function equipItem()
     {
         inventoryAPI.equipItem();

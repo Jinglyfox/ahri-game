@@ -10,11 +10,12 @@ import { input, request } from "../../data.js"
 import { inventoryAPI } from "../../inventory.js";
 import { PlayerEquipment } from "../molecules/PlayerEquipment.js";
 import { EquipmentDock } from "../molecules/EquipmentDock.js";
+import { useState } from "react";
 
 export function PlayerInventoryUI(props)
 {
     let updateGame = props.updateGame;
-    
+
     return(
         <GameArea>
             <div className="shopWrapper">
@@ -25,7 +26,7 @@ export function PlayerInventoryUI(props)
                 </HalfArea>
                 <HalfArea>
                     <InventoryHeader>Player Inventory</InventoryHeader>
-                    <PlayerInventory updateInventory={updateGame} inventory={inventoryAPI.getDisplayedInventory()}/>
+                    <PlayerInventory updateGame={updateGame} inventory={inventoryAPI.getDisplayedInventory()}/>
                     <InventoryDock updateGame={updateGame}/>
                 </HalfArea>
             </div>

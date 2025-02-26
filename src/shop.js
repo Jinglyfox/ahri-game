@@ -17,6 +17,11 @@ class ShopAPI {
         this.swappableDisplay = new ShopInventoryDisplay()
     }
 
+    getEmptyCategories()
+    {
+        return this.swappableDisplay.getEmptyCategories();
+    }
+
     getActiveItem()
     {
         return this.swappableDisplay.getActiveItem();

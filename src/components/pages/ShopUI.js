@@ -23,7 +23,7 @@ export function ShopUI(props){
         </HalfArea>
         <HalfArea>
             <ShopHeader updateInventory={updateGame} disabledMenu={shopAPI.getDisabledMenu()} displayedPage={shopAPI.getDisplayedPage()} header={shopAPI.getShopHeader()}/>
-            <ShopInventory updateInventory={updateGame} inventory={shopAPI.getDisplayedInventory()}/>
+            <ShopInventory updateInventory={updateGame} emptyCategories={shopAPI.getEmptyCategories()} inventory={shopAPI.getDisplayedInventory()}/>
             <RunningTotal updateInventory={updateGame} total={shopAPI.getFormattedRunningTotal()}/>
             <ShopDock updateGame={updateGame}/>
         </HalfArea>
